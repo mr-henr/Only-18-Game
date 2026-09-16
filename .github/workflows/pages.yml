@@ -1,0 +1,72 @@
+name: Publicar no GitHub Pages
+
+# Publica a interface a cada push na main.
+#
+# Atenção: o GitHub Pages serve apenas arquivos estáticos. O modo
+# "tela única" funciona inteiro lá; o modo "TV + celulares" precisa do
+# servidor WebSocket (server/), que o Pages não roda. O jogo detecta
+# isso sozinho e explica na tela em vez de travar.
+#
+# Para ligar o modo TV depois, hospede `server/` em qualquer lugar que
+# rode Node e defina o repository variable VITE_SERVER_URL com a URL
+# dele (ex.: https://noite.exemplo.com).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Uma publicação por vez; a mais nova cancela a anterior.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # As regras do jogo são verificadas antes de qualquer publicação:
+      # limites, privacidade e autorização não sobem quebrados.
+      - name: Verificar o motor e a rede
+        run: npm run check
+
+      - name: Conferir se o catálogo de cartas está atualizado
+        run: |
+          npm run docs
+          git diff --exit-code docs/CARTAS.md || {
+            echo "::error::docs/CARTAS.md está desatualizado. Rode 'npm run docs' e faça commit."
+            exit 1
+          }
+
+      - name: Construir
+        run: npm run build:pages
+        env:
+          VITE_SERVER_URL: ${{ vars.VITE_SERVER_URL }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,22 @@
+# Blueprint do Render — https://render.com/docs/blueprint-spec
+#
+# Sobe o jogo INTEIRO num serviço só: o mesmo processo serve a
+# interface e mantém as partidas (WebSocket). Não precisa de
+# GitHub Pages junto, nem de configurar endereço de servidor.
+#
+# Como usar: no Render, New > Blueprint e aponte para este repositório.
+
+services:
+  - type: web
+    name: noite-de-desafios
+    runtime: node
+    plan: free
+    # Virginia é a região do Render mais perto do Brasil.
+    region: virginia
+    branch: main
+    buildCommand: npm ci && npm run check && npm run build
+    startCommand: node server/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22

@@ -1,0 +1,325 @@
+/* ==================================================================
+   MESA, CONTROLE E RESPONSIVIDADE — v0.5
+   ------------------------------------------------------------------
+   Três superfícies, uma folha de estilo:
+
+   📱 celular  — alvo de toque grande, uma coluna, texto compacto
+   💻 PC       — a referência, layout em duas colunas onde couber
+   📺 TV       — lido a três metros de distância: tudo cresce, o
+                 contraste sobe e nada depende de hover
+
+   `data-surface` no <html> diz em qual delas estamos.
+   ================================================================== */
+
+/* ------------------------------------------------- peças em comum */
+
+.screen-title {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.screen-title h2 { margin: 0; flex: 1 1 auto; }
+.screen-title .eyebrow { flex-basis: 100%; margin-bottom: 0; }
+
+.block { margin-bottom: 18px; }
+.spaced { margin-top: 10px; }
+.soft { font-weight: 600; }
+.centered { justify-content: center; }
+.legend { margin-top: 14px; }
+
+.tab-count { font-size: 11px; color: var(--text-faint); }
+.badge.wish { cursor: pointer; background: transparent; color: var(--text-faint); }
+.badge.wish[data-on='1'] { background: var(--allow-soft); color: var(--allow); border-color: #3ddc8444; }
+
+.choice.compact { padding: 11px 8px; text-align: center; }
+.intensity-grid { grid-template-columns: repeat(auto-fit, minmax(62px, 1fr)); gap: 6px; }
+.input.compact { padding: 8px 12px; max-width: 190px; }
+.row-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+
+.home-modes { margin: 22px 0 4px; }
+.home-modes .choice { padding: 20px; }
+
+.code-input {
+  text-transform: uppercase; letter-spacing: .3em;
+  font-size: 26px; font-weight: 900; text-align: center;
+}
+
+.player-chip.offline { opacity: .45; text-decoration: line-through; }
+
+/* --------------------------------------------------- entrar na sala */
+
+.join-panel {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 28px; align-items: center;
+}
+.join-code { min-width: 0; }
+.code-big {
+  font-size: clamp(56px, 12vw, 128px);
+  font-weight: 900; letter-spacing: .12em; line-height: 1;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  margin: 4px 0 12px;
+}
+.join-url {
+  display: inline-block;
+  font-size: clamp(15px, 2.2vw, 24px); font-weight: 800;
+  padding: 10px 16px; border-radius: var(--r-sm);
+  background: var(--bg-input); border: 1px solid var(--line);
+  word-break: break-all;
+}
+.qr {
+  width: clamp(150px, 26vw, 290px); height: auto;
+  border-radius: var(--r-md); padding: 12px;
+  background: #ffffff0d; border: 1px solid var(--line);
+}
+.qr.placeholder {
+  display: grid; place-items: center;
+  aspect-ratio: 1; color: var(--text-faint); font-size: 30px;
+}
+
+/* -------------------------------------------------------- a mesa */
+
+.tv-board { display: flex; flex-direction: column; gap: 18px; }
+
+.tv-turn { text-align: center; }
+.who-big {
+  font-size: clamp(34px, 7vw, 92px);
+  font-weight: 900; letter-spacing: -.02em; line-height: 1;
+}
+
+.board-wait {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; text-align: center;
+  min-height: clamp(180px, 26vh, 320px);
+  padding: 28px;
+  border-radius: var(--r-lg);
+  background: var(--bg-elev);
+  border: 1px dashed var(--line);
+}
+.lock-big { font-size: clamp(40px, 6vw, 76px); animation: pulse 2.6s ease-in-out infinite; }
+.big-hint { font-size: clamp(18px, 2.6vw, 34px); font-weight: 800; }
+
+.tv-card .card-text { font-size: clamp(22px, 3.4vw, 52px); }
+
+.tv-footer { display: flex; flex-direction: column; gap: 6px; }
+
+.moon { font-size: clamp(42px, 6vw, 80px); }
+
+/* ==================================================================
+   📺 TV — tudo cresce e o contraste sobe
+   ================================================================== */
+
+html[data-surface='tv'] {
+  font-size: 19px;
+}
+html[data-surface='tv'] main { width: min(1500px, 100%); padding: 30px 40px 60px; }
+html[data-surface='tv'] .panel { padding: 30px 34px; border-radius: 28px; }
+html[data-surface='tv'] .dice3d { --die: clamp(96px, 9vw, 150px); }
+html[data-surface='tv'] .card-text { line-height: 1.32; }
+html[data-surface='tv'] .pill { font-size: 15px; padding: 8px 16px; }
+html[data-surface='tv'] .player-chip { font-size: 16px; padding: 10px 18px; }
+html[data-surface='tv'] .btn { padding: 16px 26px; font-size: 17px; }
+html[data-surface='tv'] .faint { font-size: 15px; }
+html[data-surface='tv'] .eyebrow { font-size: 12px; }
+html[data-surface='tv'] .brand b { font-size: 16px; }
+
+/* Numa TV ninguém tem mouse: o estado de foco importa mais que hover. */
+html[data-surface='tv'] .choice:hover { border-color: var(--line); }
+html[data-surface='tv'] :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+/* ==================================================================
+   📱 CELULAR — o controle
+   ================================================================== */
+
+html[data-surface='phone'] main { padding: 14px 12px calc(28px + var(--safe)); }
+html[data-surface='phone'] .panel { padding: 16px; }
+html[data-surface='phone'] .actions .btn { flex: 1 1 100%; }
+html[data-surface='phone'] .dice3d { --die: 62px; margin: 18px 0; }
+html[data-surface='phone'] .card-text { font-size: 19px; }
+
+/* ==================================================================
+   Quebras por tamanho real de tela
+   ================================================================== */
+
+/* Celular em pé */
+@media (max-width: 560px) {
+  .join-panel { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  .screen-title { justify-content: center; text-align: center; }
+  .row-actions { justify-content: flex-start; width: 100%; }
+  .input.compact { max-width: none; flex: 1 1 100%; }
+  .home-modes { grid-template-columns: 1fr; }
+  .timer-dial { width: 112px; height: 112px; }
+  .timer-value { font-size: 32px; }
+}
+
+/* Celular deitado: sobra largura e falta altura. */
+@media (max-height: 460px) and (orientation: landscape) {
+  .topbar { padding: 8px 14px; }
+  main { padding-top: 10px; }
+  .hero { padding: 20px 16px; }
+  .dice3d { --die: 54px; margin: 12px 0; }
+  .who, .who-big { font-size: 28px; }
+  .privacy-gate { padding: 22px 18px; }
+  .privacy-gate .icon { font-size: 34px; }
+}
+
+/* Tablet e PC pequeno */
+@media (min-width: 720px) {
+  .actions .btn { flex: 0 1 auto; }
+}
+
+/* TV / monitores grandes, mesmo sem data-surface */
+@media (min-width: 1500px) {
+  .join-panel { gap: 44px; }
+}
+
+/* TVs costumam cortar as bordas (overscan). */
+@media (min-width: 1800px) {
+  html[data-surface='tv'] main { padding-left: 64px; padding-right: 64px; }
+}
+
+/* Telas muito estreitas (celulares antigos) */
+@media (max-width: 360px) {
+  .tabs { gap: 4px; }
+  .tab { padding: 8px 10px; font-size: 12px; }
+  .limit-item { padding: 11px 10px; }
+  .tri button { width: 36px; height: 32px; }
+}
+
+/* Impressão e modo de alto contraste não são alvo, mas não devem quebrar. */
+@media (prefers-contrast: more) {
+  .panel, .choice, .pill { border-color: #5a5a68; }
+  .faint { color: #b9b9c6; }
+}
+
+/* --------------------------------------- barra superior em telas curtas */
+
+/* No celular a barra precisa caber sem empurrar a marca contra as
+   pílulas: o nome encolhe, a versão some e o que sobra rola. */
+@media (max-width: 620px) {
+  .topbar { padding: 10px 12px; gap: 8px; }
+  .brand b { font-size: 11px; letter-spacing: .06em; }
+  .topbar-right { gap: 6px; min-width: 0; }
+  .topbar-right .pill { font-size: 11px; padding: 5px 9px; max-width: 42vw; overflow: hidden; text-overflow: ellipsis; }
+  .icon-btn { width: 32px; height: 32px; font-size: 14px; }
+  .limits-head { top: 49px; }
+}
+
+@media (max-width: 420px) {
+  .brand b { font-size: 10px; }
+  .topbar-right .pill { max-width: 34vw; }
+}
+
+/* ==================================================================
+   TUTORIAL
+   ================================================================== */
+
+.tutorial { text-align: center; }
+.tutorial h2 { margin-bottom: 10px; }
+.tutorial p.dim { max-width: 52ch; margin: 0 auto 18px; }
+
+.tutorial-progress {
+  display: flex; gap: 6px; justify-content: center; margin-bottom: 18px;
+}
+.tutorial-progress i {
+  width: 26px; height: 4px; border-radius: 99px;
+  background: var(--line); transition: background .3s ease;
+}
+.tutorial-progress i.on { background: var(--accent); }
+
+.tutorial-stage {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 180px; margin: 10px 0 4px;
+}
+.tutorial-stage.tall { min-height: 250px; }
+.tutorial-stage > * { width: 100%; }
+
+.tutorial-visual { display: grid; place-items: center; gap: 12px; }
+.tutorial-visual.big-emoji { font-size: clamp(46px, 11vw, 78px); letter-spacing: .08em; }
+
+.tutorial-card { max-width: 460px; margin: 0 auto; }
+
+/* Botões só de enfeite: parecem reais, mas não clicam. */
+.demo-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.btn.fake { cursor: default; pointer-events: none; }
+
+.limit-item.demo { max-width: 460px; margin: 0 auto 14px; text-align: left; }
+
+.demo-result {
+  max-width: 460px; margin: 0 auto; text-align: left;
+  padding: 14px 16px; border-radius: var(--r-md);
+  border: 1px solid var(--line);
+  animation: panelIn .3s ease both;
+}
+.demo-result p { margin: 6px 0 0; font-size: 14px; color: var(--text-dim); }
+.demo-result.allow { background: var(--allow-soft); border-color: #3ddc8444; }
+.demo-result.allow b { color: var(--allow); }
+.demo-result.ask   { background: var(--ask-soft); border-color: #ffb02044; }
+.demo-result.ask b { color: var(--ask); }
+.demo-result.block { background: var(--block-soft); border-color: #ff5a5a44; }
+.demo-result.block b { color: var(--block); }
+
+.block-demo { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.block-demo .arrow { color: var(--text-faint); font-size: 20px; }
+
+.card-back.small { max-width: 220px; min-height: 150px; margin: 0 auto; }
+.demo-track { max-width: 300px; margin: 0 auto; }
+
+/* ------------------------------------------------- clareza e ajuda */
+
+.lead { font-size: clamp(15px, 2vw, 18px); max-width: 56ch; margin-left: auto; margin-right: auto; }
+.home-stats { justify-content: center; margin: 16px 0 8px; }
+.age-note { max-width: 62ch; margin: 18px auto 0; line-height: 1.6; }
+
+.choice.unavailable { opacity: .72; }
+.choice.unavailable .meta { color: var(--ask); }
+
+.steps { display: grid; gap: 10px; margin: 16px 0; }
+.step {
+  padding: 14px 16px; border-radius: var(--r-md);
+  background: var(--bg-elev-2); border: 1px solid var(--line-soft);
+  display: grid; gap: 4px;
+}
+.step code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 14px; color: var(--accent-2);
+  background: #0c0c12; padding: 6px 10px; border-radius: 6px;
+  justify-self: start;
+}
+
+/* Caixa de ajuda que abre e fecha dentro de uma tela. */
+.helpbox {
+  border: 1px solid var(--line); border-radius: var(--r-md);
+  background: var(--bg-elev-2); overflow: hidden; margin-bottom: 12px;
+}
+.helpbox > summary {
+  cursor: pointer; padding: 12px 16px; font-weight: 700; font-size: 14px;
+  list-style: none; display: flex; align-items: center; gap: 8px;
+}
+.helpbox > summary::-webkit-details-marker { display: none; }
+.helpbox > summary::after { content: '⌄'; margin-left: auto; transition: transform .2s; }
+.helpbox[open] > summary::after { transform: rotate(180deg); }
+.helpbox .help-body { padding: 0 16px 14px; font-size: 14px; color: var(--text-dim); }
+.helpbox .help-body p { margin: 0 0 10px; }
+.helpbox dl { margin: 0; display: grid; gap: 10px; }
+.helpbox dt { font-weight: 800; color: var(--text); }
+.helpbox dd { margin: 2px 0 0; }
+
+/* Legenda dos três estados, sempre à vista na tela de limites. */
+.states-legend {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  margin-bottom: 12px;
+}
+.states-legend div {
+  padding: 10px 12px; border-radius: var(--r-sm);
+  background: var(--bg-elev-2); border: 1px solid var(--line-soft);
+  font-size: 12.5px; line-height: 1.35;
+}
+.states-legend b { display: block; margin-bottom: 2px; }
+.states-legend .s-allow b { color: var(--allow); }
+.states-legend .s-ask b { color: var(--ask); }
+.states-legend .s-block b { color: var(--block); }
+
+@media (max-width: 560px) {
+  .states-legend { grid-template-columns: 1fr; }
+}

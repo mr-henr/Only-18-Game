@@ -1,0 +1,115 @@
+/* ==================================================================
+   IDENTIDADE VISUAL POR MODO — v0.4
+   ------------------------------------------------------------------
+   O modo escolhido troca a paleta inteira do jogo. `app.js` escreve
+   data-mode no <html> e tudo abaixo reage: acento, brilho, fundo,
+   textura e a cor do verso das cartas.
+
+   Nenhuma regra de jogo depende disto — é só pele.
+   ================================================================== */
+
+:root {
+  /* Paleta neutra, usada antes de o modo ser escolhido. */
+  --accent: #ff4d6d;
+  --accent-2: #ff8a5c;
+  --accent-soft: #ff4d6d22;
+  --accent-line: #ff4d6d55;
+  --glow: #ff4d6d40;
+  --halo-1: #1a0d15;
+  --halo-2: #08080c;
+  --card-back: linear-gradient(145deg, #1c1420, #120d15);
+  --mode-texture: 0;
+  --theme-fade: 520ms;
+}
+
+html {
+  transition: background-color var(--theme-fade) ease;
+}
+
+/* O halo do fundo acompanha o acento do modo. */
+body {
+  background:
+    radial-gradient(1100px 560px at 50% -12%, var(--halo-1) 0%, transparent 68%),
+    var(--halo-2);
+  transition: background var(--theme-fade) ease;
+}
+
+/* 🌙 LEVE — frio, social, sem peso. */
+html[data-mode='leve'] {
+  --accent: #6c8cff;
+  --accent-2: #8fd3ff;
+  --accent-soft: #6c8cff1f;
+  --accent-line: #6c8cff55;
+  --glow: #6c8cff40;
+  --halo-1: #101a33;
+  --halo-2: #070911;
+  --card-back: linear-gradient(145deg, #16203a, #0d1322);
+}
+
+/* 🔥 OUSADO — âmbar quente, a temperatura subindo. */
+html[data-mode='ousado'] {
+  --accent: #ff8a3d;
+  --accent-2: #ffc46b;
+  --accent-soft: #ff8a3d1f;
+  --accent-line: #ff8a3d55;
+  --glow: #ff8a3d40;
+  --halo-1: #2a1608;
+  --halo-2: #0b0806;
+  --card-back: linear-gradient(145deg, #2c1a0d, #17100a);
+}
+
+/* 🔥🔥 ADULTO — vermelho profundo, luz baixa. */
+html[data-mode='adulto'] {
+  --accent: #ff2e63;
+  --accent-2: #ff7b9c;
+  --accent-soft: #ff2e6320;
+  --accent-line: #ff2e6355;
+  --glow: #ff2e6345;
+  --halo-1: #2b0715;
+  --halo-2: #0a0407;
+  --card-back: linear-gradient(145deg, #2a0f1c, #160810);
+}
+
+/* ⚡ BATE-PRONTO — contraste duro, nada de enfeite. */
+html[data-mode='batePronto'] {
+  --accent: #ffe14d;
+  --accent-2: #fff3a8;
+  --accent-soft: #ffe14d18;
+  --accent-line: #ffe14d4d;
+  --glow: #ffe14d33;
+  --halo-1: #1a1705;
+  --halo-2: #060604;
+  --card-back: linear-gradient(145deg, #1e1b08, #101005);
+  --r-lg: 12px;
+  --r-md: 8px;
+  --r-sm: 6px;
+}
+
+/* 🛠️ LIVRE — turquesa, clima de painel de controle. */
+html[data-mode='livre'] {
+  --accent: #35d6c0;
+  --accent-2: #8ff0e2;
+  --accent-soft: #35d6c01c;
+  --accent-line: #35d6c055;
+  --glow: #35d6c038;
+  --halo-1: #062522;
+  --halo-2: #04090a;
+  --card-back: linear-gradient(145deg, #0a2b28, #061715);
+}
+
+/* O botão primário carrega o acento do modo, com contraste garantido. */
+.btn.primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #0a0509;
+  box-shadow: 0 6px 22px var(--glow);
+}
+html[data-mode='batePronto'] .btn.primary,
+html[data-mode='livre'] .btn.primary { color: #07100e; }
+
+.pill.accent { border-color: var(--accent-line); background: var(--accent-soft); color: var(--accent-2); }
+.eyebrow { color: var(--accent); }
+.choice.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-line), 0 8px 30px var(--glow); }
+.input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.tab.active { background: var(--accent); color: #0a0509; border-color: var(--accent); }
+.track i.on { background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.notice { background: var(--accent-soft); border-color: var(--accent-line); }
