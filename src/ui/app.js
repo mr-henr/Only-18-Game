@@ -8,6 +8,7 @@ import { h } from './dom.js';
 import { GAME_MODES } from '../data/gameModes.js';
 import { intensityCeiling } from '../engine/gameEngine.js';
 import { ensure, sfx, haptic, isMuted, toggleMuted } from './fx.js';
+import { scheduleFit } from './fit.js';
 
 import homeScreen from './screens/home.js';
 import modeScreen from './screens/mode.js';
@@ -175,9 +176,18 @@ export function render() {
   const changed = store.screen !== lastScreen;
   lastScreen = store.screen;
 
-  const main = h('main', { class: store.screen === 'limits' ? 'wide' : '' },
-    h('div', { class: changed ? 'screen screen-enter' : 'screen' }, screen(store))
-  );
+  // A raiz de cada tela e a peca que o fit.js mede e distribui em
+  // colunas (ver fit.css): por isso ela sai daqui sempre marcada.
+  const body = screen(store);
+  if (body instanceof HTMLElement) body.classList.add('screen-body');
+
+  const main = h('main', {
+    class: store.screen === 'limits' ? 'wide' : '',
+    dataset: { screen: store.screen }
+  }, h('div', { class: changed ? 'screen screen-enter' : 'screen' }, body));
 
   root.replaceChildren(h('div', { class: 'app' }, topbar(), main));
+
+  // Depois de desenhado: quantas colunas cabem e quanto encolher.
+  scheduleFit();
 }

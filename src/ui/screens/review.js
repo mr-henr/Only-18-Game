@@ -23,7 +23,7 @@ function penaltyPanel(game) {
   const options = availablePenalties(game);
   const chosen = game.penalties.length + (game.customPenalty ? 1 : 0);
 
-  return panel({},
+  return panel({ class: 'penalties-panel' },
     h('h3', {}, '🎭 E quem não cumprir?'),
     h('p', { class: 'dim' },
       'Por padrão, pular não custa nada — essa é a regra do jogo e ninguém perde esse direito. ' +

@@ -223,7 +223,7 @@ export function limitsEditor(o) {
         : null,
 
       group.id === 'dynamics'
-        ? h('div', {},
+        ? h('div', { class: 'dynamics-blocks' },
             scopeControl(o.limits, { hasPartner: o.hasPartner, onChange: o.onChange, onWarn: o.onWarn }),
             intensityControl(o.limits, mode, o.onChange),
             h('div', { class: 'block' },
@@ -242,7 +242,10 @@ export function limitsEditor(o) {
               btn('⚠️', { variant: 'ghost', size: 'sm', onClick: () => { setGroup(o.limits, group.id, ASK); o.onChange(); } }),
               btn('🚫', { variant: 'ghost', size: 'sm', onClick: () => { setGroup(o.limits, group.id, BLOCK); o.onChange(); } })
             ),
-            items.map((item) => limitRow(o.limits, item, mode, o.onChange)))
+            // A lista vive numa caixa propria porque em tela larga ela
+            // vira colunas (ver fit.css) — o resto do painel, nao.
+            h('div', { class: 'limit-list' },
+              items.map((item) => limitRow(o.limits, item, mode, o.onChange))))
         : null
     ),
 

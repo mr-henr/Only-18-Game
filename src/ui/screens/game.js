@@ -396,13 +396,16 @@ export default function gameScreen() {
       body
     ),
 
-    !mode.fastFlow ? panel({ class: 'tight' }, intensityBar(game)) : null,
-
-    h('div', { class: 'actions center' },
-      btn('Encerrar a noite', {
-        variant: 'ghost', size: 'sm',
-        onClick: () => { play('finish'); endGame(game); go('end'); }
-      })
+    // O termometro e o encerrar andam juntos: no celular, um embaixo do
+    // outro; em tela deitada, a coluna ao lado da carta (ver fit.css).
+    h('div', { class: 'game-side' },
+      !mode.fastFlow ? panel({ class: 'tight' }, intensityBar(game)) : null,
+      h('div', { class: 'actions center' },
+        btn('Encerrar a noite', {
+          variant: 'ghost', size: 'sm',
+          onClick: () => { play('finish'); endGame(game); go('end'); }
+        })
+      )
     )
   );
 }

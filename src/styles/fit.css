@@ -1,0 +1,194 @@
+/* ==================================================================
+   CABER NA TELA — PC e TV deitados
+   ------------------------------------------------------------------
+   Regra desta folha: em tela deitada e grande, a janela e a moldura do
+   jogo. A barra fica em cima, o conteudo ocupa TODO o resto e se
+   espalha em colunas — ninguem precisa rolar para ver o que ja estava
+   ali.
+
+   `data-fit="on"` no <html> e ligado pelo fit.js, que tambem escolhe
+   `data-cols` e `--fit-scale`: quantas colunas cabem e quanto encolher
+   so da para saber medindo.
+
+   Esta folha entra por ultimo de proposito — ela corrige os tamanhos
+   das anteriores (main.css, tv.css) quando o modo esta ligado.
+   ================================================================== */
+
+html[data-fit='on'],
+html[data-fit='on'] body { height: 100%; overflow: hidden; }
+
+html[data-fit='on'] .app { height: 100dvh; max-height: 100dvh; overflow: hidden; }
+
+/* A barra encolhe: cada pixel dela e um pixel a menos para o jogo. */
+html[data-fit='on'] .topbar {
+  position: static; flex: 0 0 auto;
+  padding: 10px clamp(20px, 2.4vw, 46px);
+}
+
+html[data-fit='on'] main {
+  flex: 1 1 auto; min-height: 0;
+  display: flex; flex-direction: column;
+  width: min(1680px, 100%);
+  padding: clamp(10px, 1.8vh, 26px) clamp(18px, 2.4vw, 46px);
+}
+html[data-fit='on'] main.wide { width: min(1680px, 100%); }
+
+/* A area do conteudo: centrada no que sobrou.
+   `safe center` e a valvula de escape — quando, mesmo no menor
+   tamanho, o conteudo nao couber (a tela de limites com muitos itens),
+   ele encosta no topo e rola aqui dentro, em vez de ter o comeco
+   cortado. A calha de rolagem fica sempre reservada para a largura nao
+   mudar quando isso acontece. */
+html[data-fit='on'] .screen {
+  flex: 1 1 auto; min-height: 0;
+  display: flex; flex-direction: column;
+  justify-content: safe center; align-items: center;
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-gutter: stable; scrollbar-width: thin;
+  overscroll-behavior: contain;
+}
+
+/* ------------------------------------------------------ o conteudo */
+
+html[data-fit='on'] .screen-body {
+  --fit-scale: 1;
+  transform: scale(var(--fit-scale));
+  transform-origin: top center;
+  width: calc(100% / var(--fit-scale));
+}
+
+/* Coluna unica: texto largo demais cansa, entao ela nao passa disso. */
+html[data-fit='on'] .screen-body[data-cols='1'] {
+  width: calc(min(980px, 100%) / var(--fit-scale));
+}
+
+html[data-fit='on'] .screen-body[data-cols='2'] { columns: 2; }
+html[data-fit='on'] .screen-body[data-cols='3'] { columns: 3; }
+
+html[data-fit='on'] .screen-body[data-cols='2'],
+html[data-fit='on'] .screen-body[data-cols='3'] {
+  column-gap: clamp(14px, 1.6vw, 26px);
+}
+
+/* Nada de painel cortado no meio da coluna. */
+html[data-fit='on'] .screen-body[data-cols='2'] > *,
+html[data-fit='on'] .screen-body[data-cols='3'] > * {
+  break-inside: avoid;
+  margin-top: 0;
+  margin-bottom: clamp(10px, 1.4vh, 16px);
+}
+
+/* A linha de botoes final atravessa as colunas: e o fim da tela, nao
+   o rodape de uma coluna. */
+html[data-fit='on'] .screen-body[data-cols='2'] > .actions:last-child,
+html[data-fit='on'] .screen-body[data-cols='3'] > .actions:last-child {
+  column-span: all;
+  margin: clamp(6px, 1vh, 14px) 0 0;
+}
+
+/* ------------------------------------------- tudo um pouco mais junto */
+
+html[data-fit='on'] .panel {
+  padding: clamp(14px, 2vh, 24px) clamp(16px, 1.6vw, 28px);
+}
+html[data-fit='on'] .panel.tight { padding: clamp(12px, 1.6vh, 18px) 16px; }
+html[data-fit='on'] .hero { padding: clamp(18px, 3.4vh, 44px) 24px; }
+
+html[data-fit='on'] h1 { font-size: clamp(30px, 4.4vw, 58px); margin: 4px 0 10px; }
+html[data-fit='on'] p { margin-bottom: clamp(8px, 1.2vh, 14px); }
+html[data-fit='on'] .actions { margin-top: clamp(10px, 1.6vh, 20px); }
+html[data-fit='on'] .dice3d { margin: clamp(10px, 2vh, 28px) 0; }
+html[data-fit='on'] .players-row { margin-bottom: clamp(8px, 1.4vh, 18px); }
+html[data-fit='on'] .intensity-bar { margin-top: clamp(8px, 1.4vh, 20px); }
+html[data-fit='on'] .card { padding: clamp(16px, 2.6vh, 28px) 22px; }
+html[data-fit='on'] .privacy-gate { padding: clamp(24px, 5vh, 56px) 24px; }
+html[data-fit='on'] .age-note { margin-top: clamp(8px, 1.4vh, 18px); }
+html[data-fit='on'] .home-modes { margin: clamp(10px, 1.8vh, 22px) 0 4px; }
+
+/* Sem rolagem, "grudar no topo" nao quer dizer nada. */
+html[data-fit='on'] .limits-head { position: static; }
+
+/* ================================================================
+   A TELA DO JOGO — a carta de um lado, o termometro do outro
+   ================================================================ */
+
+html[data-fit='on'] main[data-screen='game'] .screen-body[data-cols='2'],
+html[data-fit='on'] main[data-screen='game'] .screen-body[data-cols='3'] {
+  columns: unset;
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: clamp(12px, 1.6vw, 22px);
+  align-content: center;
+  align-items: start;          /* o termometro tem a altura dele, nao a da carta */
+}
+html[data-fit='on'] main[data-screen='game'] .screen-body > * { margin: 0; }
+
+/* As pecas altas da mesa encolhem antes de a tela inteira encolher:
+   e melhor o dado ser menor do que a carta ficar ilegivel. */
+html[data-fit='on'] .turn-head { margin-bottom: clamp(6px, 1.2vh, 14px); }
+html[data-fit='on'] .turn-head .who { font-size: clamp(26px, 3.4vw, 46px); }
+html[data-fit='on'] .dice3d { --die: clamp(56px, 5.4vw, 100px); }
+html[data-fit='on'] .timer-hint { margin-top: 6px; }
+
+/* O cronometro deitado: o mostrador ao lado dos botoes, nao em cima. */
+html[data-fit='on'] .timer {
+  flex-direction: row; justify-content: center;
+  gap: clamp(12px, 1.6vw, 24px);
+  max-width: none; width: fit-content;
+  margin: clamp(10px, 1.6vh, 18px) auto 2px;
+  padding: clamp(10px, 1.4vh, 16px) clamp(16px, 1.6vw, 24px);
+}
+html[data-fit='on'] .timer-dial {
+  width: clamp(84px, 13vh, 118px); height: clamp(84px, 13vh, 118px);
+}
+html[data-fit='on'] .timer-actions { flex-direction: column; justify-content: center; }
+html[data-fit='on'] main[data-screen='game'] .game-side { align-self: start; }
+html[data-fit='on'] .game-side { display: grid; gap: clamp(10px, 1.4vh, 16px); }
+
+/* A lista de prendas e larga por natureza (doze opcoes): em vez de
+   virar uma torre dentro de uma coluna, ela atravessa as colunas. */
+html[data-fit='on'] .screen-body[data-cols='2'] > .penalties-panel,
+html[data-fit='on'] .screen-body[data-cols='3'] > .penalties-panel { column-span: all; }
+html[data-fit='on'] .penalties-panel .grid.two {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+/* ================================================================
+   A MESA (TV) — o que esta na mesa cresce, o resto encosta nas bordas
+   ================================================================ */
+
+html[data-fit='on'] .tv-board { gap: clamp(10px, 1.8vh, 20px); }
+html[data-fit='on'] .board-wait { min-height: clamp(140px, 22vh, 280px); padding: clamp(16px, 3vh, 32px); }
+html[data-fit='on'] .join-panel { gap: clamp(16px, 2vw, 40px); }
+/* O codigo da sala mora numa coluna, nao na tela toda: o tamanho tem
+   de sair da coluna, senao ele quebra no meio da palavra. */
+html[data-fit='on'] .code-big { font-size: clamp(38px, 4.6vw, 96px); margin: 2px 0 8px; }
+html[data-fit='on'] .join-url { font-size: clamp(13px, 1.3vw, 20px); }
+html[data-fit='on'] .qr { width: clamp(120px, 14vw, 240px); }
+
+/* ================================================================
+   A TELA DE LIMITES — lista longa por natureza
+   ------------------------------------------------------------------
+   Aqui nao da para inventar: sao dezenas de itens. Em vez de espremer
+   tudo, a lista vira colunas (cabe o triplo) e o que passar disso rola
+   dentro da area do conteudo, com as abas sempre a vista.
+   ================================================================ */
+
+html[data-fit='on'] main[data-screen='limits'] .screen-body,
+html[data-fit='on'] main[data-screen='remote'] .screen-body { columns: unset; }
+
+html[data-fit='on'] .limit-list { columns: 340px; column-gap: 12px; }
+html[data-fit='on'] .limit-list > .limit-item {
+  break-inside: avoid;
+  margin: 0 0 8px;
+}
+/* A aba de dinamicas e um bloco de texto so: em tela larga ela vira
+   colunas tambem, senao cada linha atravessa a tela inteira. */
+html[data-fit='on'] .dynamics-blocks { columns: 380px; column-gap: clamp(14px, 1.6vw, 26px); }
+html[data-fit='on'] .dynamics-blocks > .block { break-inside: avoid; margin-top: 0; }
+
+html[data-fit='on'] .states-legend { grid-template-columns: repeat(3, 1fr); margin-bottom: 10px; }
+html[data-fit='on'] .helpbox { margin-bottom: 10px; }
+html[data-fit='on'] .limits-head { padding: 8px 0; }
+html[data-fit='on'] .screen-title { margin-bottom: 10px; }
+html[data-fit='on'] .legend { margin-top: 10px; }

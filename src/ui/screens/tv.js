@@ -141,7 +141,7 @@ function penaltiesPanel(view) {
   const opts = view.table?.availablePenalties ?? [];
   const chosen = view.penalties.selected.length + (view.penalties.custom ? 1 : 0);
 
-  return panel({},
+  return panel({ class: 'penalties-panel' },
     h('h3', {}, '🎭 E quem não cumprir?'),
     h('p', { class: 'dim' },
       'Pular não custa nada — essa é a regra. Mas vocês podem combinar uma prenda. ' +

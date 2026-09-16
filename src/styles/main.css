@@ -279,6 +279,8 @@ p  { margin: 0 0 14px; }
 .track i { flex: 1; background: #24242e; transition: background .3s; }
 .track i.on { background: var(--accent); }
 
+.game-side { margin-top: 14px; }
+
 .scoreboard { display: grid; gap: 8px; margin-top: 8px; }
 .score-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: var(--r-md); background: var(--bg-elev-2); border: 1px solid var(--line-soft); }
 .score-row .stats { display: flex; gap: 10px; font-size: 13px; font-weight: 700; }

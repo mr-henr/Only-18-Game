@@ -134,6 +134,7 @@ src/
 
   ui/                   telas — só lê estado e chama o engine
     fx.js               som sintetizado, vibração e clarão de tela
+    fit.js              mede a tela e decide colunas e tamanho
     components/         dados 3D e cronômetro
 
   styles/
@@ -141,6 +142,7 @@ src/
     themes.css          a paleta de cada modo
     motion.css          dados 3D, virada de carta e transições
     tv.css              mesa, controle e responsividade
+    fit.css             tela deitada: tudo à vista, sem rolar
 
 server/                 o mesmo motor, rodando de verdade no modo TV
   index.js              HTTP + WebSocket
@@ -343,6 +345,30 @@ Três superfícies, uma folha de estilo (`styles/tv.css`), escolhidas por um
 
 Verificado sem transbordo horizontal em 390px, 1100px e 1920px, incluindo a tela
 de limites, que é a mais densa do jogo.
+
+### Tela cheia em PC e TV (v0.8)
+
+Em tela deitada e grande (≥ 900px de largura, ≥ 520px de altura e mais larga que
+alta), a janela vira a moldura do jogo: a página não rola mais. `ui/fit.js` mede
+cada tela depois de desenhada e toma duas decisões que não dá para escrever no
+CSS, porque dependem do conteúdo:
+
+1. **Quantas colunas** — a menor quantidade que já faz caber (até três, nunca
+   mais estreitas que 340px). Um painel sozinho nunca vira duas colunas.
+2. **Que tamanho** — busca binária pelo maior fator que ainda cabe, entre 0,7 e
+   1,2. Encolher alarga a área útil e o texto reflui, então cada tentativa é
+   medida de novo. Numa TV, uma tela curta *cresce* em vez de deixar preto
+   sobrando.
+
+Algumas telas ganharam arranjo próprio: a partida fica com a carta de um lado e
+o termômetro do outro, a lista de limites vira colunas, a aba de dinâmicas
+também, e a lista de prendas atravessa as colunas em vez de virar uma torre.
+
+Quando nem no menor tamanho cabe — a aba de dinâmicas num monitor baixo, por
+exemplo — o conteúdo rola dentro da própria área, com a barra superior e as abas
+paradas no lugar. É a exceção, não o padrão. Fora dessa faixa de tela (celular
+em pé, celular deitado, janela estreita) nada disso liga: vale o layout de
+sempre.
 
 ## Camada visual (v0.4)
 
