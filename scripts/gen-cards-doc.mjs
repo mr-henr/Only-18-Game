@@ -151,16 +151,28 @@ w('');
 const forCouple = (c) => (c.minPlayers ?? 2) <= 2;
 const forGroup = (c) => !c.maxPlayers || c.maxPlayers >= 3;
 
+const soCasal = (c) => c.maxPlayers === 2;
+const soGrupo = (c) => (c.minPlayers ?? 2) > 2;
+const ambos = (c) => forCouple(c) && forGroup(c);
+
 w('### Casal (2) × grupo (3+)', '');
-w('Quantas cartas de cada baralho cada formato enxerga. Cartas marcadas',
-  '`minPlayers: 3` não existem para um casal; `maxPlayers: 2` não existem para um grupo.', '');
-w('| Baralho | 👤👤 Casal | 👥 Grupo | Só casal | Só grupo |', '|---|---|---|---|---|');
+w('**As colunas não são quatro grupos separados.** `Serve aos dois` são as cartas que',
+  'funcionam em qualquer formato; `Só casal` (`maxPlayers: 2`) e `Só grupo`',
+  '(`minPlayers: 3`) são as exclusivas. As duas últimas colunas são o total que cada',
+  'formato enxerga — ou seja, `serve aos dois` + a exclusiva dele.', '');
+w(`As exclusivas são poucas de propósito: quando uma carta de grupo também faz sentido a`,
+  `dois, ela ganha uma **redação alternativa** para duas pessoas (${ALL_CARDS.filter((c) => c.text2).length} cartas hoje) em vez`,
+  'de virar exclusiva. Só vira exclusiva o que não tem como existir no outro formato —',
+  'votação, apontar para alguém, corrente em roda e sorteio de dupla não existem a dois;',
+  'história em comum e cena longa a dois não funcionam com plateia.', '');
+w('| Baralho | 🤝 Serve aos dois | 👤👤 Só casal | 👥 Só grupo | = casal vê | = grupo vê |',
+  '|---|---|---|---|---|---|');
 for (const [deck, info] of Object.entries(DECK_INFO)) {
   const cards = ALL_CARDS.filter((c) => c.deck === deck);
   if (!cards.length) continue;
-  w(`| ${info.icon} ${info.name} | ${cards.filter(forCouple).length} | ${cards.filter(forGroup).length} | ${cards.filter((c) => c.maxPlayers === 2).length} | ${cards.filter((c) => (c.minPlayers ?? 2) > 2).length} |`);
+  w(`| ${info.icon} ${info.name} | ${cards.filter(ambos).length} | ${cards.filter(soCasal).length} | ${cards.filter(soGrupo).length} | ${cards.filter(forCouple).length} | ${cards.filter(forGroup).length} |`);
 }
-w(`| **Total** | **${ALL_CARDS.filter(forCouple).length}** | **${ALL_CARDS.filter(forGroup).length}** | ${ALL_CARDS.filter((c) => c.maxPlayers === 2).length} | ${ALL_CARDS.filter((c) => (c.minPlayers ?? 2) > 2).length} |`);
+w(`| **Total** | **${ALL_CARDS.filter(ambos).length}** | **${ALL_CARDS.filter(soCasal).length}** | **${ALL_CARDS.filter(soGrupo).length}** | **${ALL_CARDS.filter(forCouple).length}** | **${ALL_CARDS.filter(forGroup).length}** |`);
 w('');
 
 const alcoholCards = ALL_CARDS.filter((c) => c.alcohol);

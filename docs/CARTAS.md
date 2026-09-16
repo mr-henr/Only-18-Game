@@ -26,19 +26,27 @@
 
 ### Casal (2) × grupo (3+)
 
-Quantas cartas de cada baralho cada formato enxerga. Cartas marcadas
-`minPlayers: 3` não existem para um casal; `maxPlayers: 2` não existem para um grupo.
+**As colunas não são quatro grupos separados.** `Serve aos dois` são as cartas que
+funcionam em qualquer formato; `Só casal` (`maxPlayers: 2`) e `Só grupo`
+(`minPlayers: 3`) são as exclusivas. As duas últimas colunas são o total que cada
+formato enxerga — ou seja, `serve aos dois` + a exclusiva dele.
 
-| Baralho | 👤👤 Casal | 👥 Grupo | Só casal | Só grupo |
-|---|---|---|---|---|
-| 💬 Perguntas | 32 | 39 | 4 | 11 |
-| 🎯 Desafios sociais | 22 | 33 | 4 | 15 |
-| 💋 Beijos e contato físico | 37 | 45 | 3 | 11 |
-| 👕 Roupa | 18 | 23 | 2 | 7 |
-| 🔞 Conteúdo sexual | 28 | 28 | 4 | 4 |
-| ⛓️ Poder e exposição | 22 | 26 | 3 | 7 |
-| 🍻 Bebida | 22 | 29 | 0 | 7 |
-| **Total** | **181** | **223** | 20 | 62 |
+As exclusivas são poucas de propósito: quando uma carta de grupo também faz sentido a
+dois, ela ganha uma **redação alternativa** para duas pessoas (19 cartas hoje) em vez
+de virar exclusiva. Só vira exclusiva o que não tem como existir no outro formato —
+votação, apontar para alguém, corrente em roda e sorteio de dupla não existem a dois;
+história em comum e cena longa a dois não funcionam com plateia.
+
+| Baralho | 🤝 Serve aos dois | 👤👤 Só casal | 👥 Só grupo | = casal vê | = grupo vê |
+|---|---|---|---|---|---|
+| 💬 Perguntas | 28 | 4 | 11 | 32 | 39 |
+| 🎯 Desafios sociais | 18 | 4 | 15 | 22 | 33 |
+| 💋 Beijos e contato físico | 34 | 3 | 11 | 37 | 45 |
+| 👕 Roupa | 16 | 2 | 7 | 18 | 23 |
+| 🔞 Conteúdo sexual | 24 | 4 | 4 | 28 | 28 |
+| ⛓️ Poder e exposição | 19 | 3 | 7 | 22 | 26 |
+| 🍻 Bebida | 22 | 0 | 7 | 22 | 29 |
+| **Total** | **161** | **20** | **62** | **181** | **223** |
 
 🍻 **29 cartas de bebida.** Só entram se o grupo ligar "jogar com bebida" na
 criação da partida — e, mesmo assim, cada jogador filtra o que aceita na aba 🍻 dos limites.
