@@ -440,8 +440,14 @@ function rolarAte(room, teste, max = 400) {
     const celOutro = [celA, celB].find((c) => c.playerId !== perguntadoId);
     const vMesa = viewFor(room, mesa);
 
-    check('quem precisa responder recebe o texto',
-      viewFor(room, celPerguntado).card?.text === texto);
+    // Quem responde recebe o desafio, mas SEM os nomes: a decisão tem
+    // que ser sobre o que vai acontecer, não sobre com quem.
+    const textoPerguntado = viewFor(room, celPerguntado).card?.text ?? '';
+    const nomes = room.game.players.map((p) => p.name);
+    check('quem precisa responder recebe o desafio',
+      textoPerguntado.length > 0 && viewFor(room, celPerguntado).card?.kind === 'consent');
+    check('...mas sem os nomes de quem está envolvido',
+      nomes.every((n) => !textoPerguntado.includes(n)), textoPerguntado);
     check('a MESA não recebe o texto da confirmação',
       vMesa.card?.kind === 'consent-waiting' && !JSON.stringify(vMesa).includes(texto));
     check('a MESA não fica sabendo DE QUEM o jogo está esperando',
@@ -504,6 +510,184 @@ section('Autorização das ações');
   const lim = room.game.players.find((p) => p.id === celDaVez.playerId).limits;
   check('limites forjados são reconstruídos e saneados',
     !('naoExiste' in lim.entries) && lim.maxIntensity <= 5 && lim.scope === 'any_player');
+}
+
+/* ------------------------------ confirmação privada sem nomes (1) */
+
+section('Confirmação privada sem nomes');
+{
+  const { renderNeutral, renderText } = await import('../src/engine/slotResolver.js');
+  const card = { text: '{actor}, dê um beijo demorado em {target} — no pescoço.' };
+  const parts = [
+    { id: 'a', name: 'ANA', role: 'actor' },
+    { id: 'b', name: 'BRUNO', role: 'target' }
+  ];
+
+  const paraAna = renderNeutral(card, {}, parts, 'a', 2);
+  const paraBru = renderNeutral(card, {}, parts, 'b', 2);
+
+  check('o texto da confirmação não cita nenhum nome',
+    !/ANA|BRUNO/.test(paraAna) && !/ANA|BRUNO/.test(paraBru));
+  check('quem responde se reconhece como "você"',
+    paraAna.startsWith('Você') && paraBru.includes('você'));
+  check('as preposições ficam certas em português',
+    !/\b(em|de|por) (a|o|as|os)\b/.test(`${paraAna} ${paraBru}`), paraAna);
+  check('depois de aceitar, os nomes voltam',
+    renderText(card, {}, parts, 2).includes('ANA') &&
+    renderText(card, {}, parts, 2).includes('BRUNO'));
+
+  // "sem as mãos" não pode virar "snas mãos"
+  const armadilha = renderNeutral(
+    { text: '{actor} faz massagem em {target} sem as mãos.' }, {}, parts, 'a', 2);
+  check('a contração não estraga palavras que terminam em "em"',
+    armadilha.includes('sem as mãos'), armadilha);
+}
+
+/* ------------------------------- progressão natural da noite (2) */
+
+section('A noite sobe sozinha');
+{
+  const montar = (n, liberal) => {
+    const g = G.createGame({ modeId: 'ousado' });
+    for (let i = 0; i < n; i++) G.addPlayer(g, `J${i}`);
+    for (const p of g.players) {
+      for (const grupo of ['kisses', 'touch', 'clothing', 'body']) {
+        L.setGroup(p.limits, grupo, liberal ? 'allow' : 'block');
+      }
+      p.limits.ready = true;
+    }
+    G.startGame(g);
+    return g;
+  };
+
+  const liberal = montar(2, true);
+  const restrito = montar(6, false);
+  check('mesa liberal sobe mais rápido que mesa restrita',
+    G.progressionPlan(liberal).necessarios < G.progressionPlan(restrito).necessarios,
+    `${G.progressionPlan(liberal).necessarios} vs ${G.progressionPlan(restrito).necessarios} cartas`);
+
+  const poucos = montar(2, true);
+  const muitos = montar(6, true);
+  check('mais jogadores = mais cartas por nível',
+    G.progressionPlan(poucos).necessarios < G.progressionPlan(muitos).necessarios,
+    `2 jogadores: ${G.progressionPlan(poucos).necessarios} · 6 jogadores: ${G.progressionPlan(muitos).necessarios}`);
+
+  const g = montar(2, true);
+  const nivelInicial = g.intensity;
+  let subiu = false;
+  for (let i = 0; i < 14 && !subiu; i++) {
+    G.roll(g, () => 0.5);
+    if (g.play) { G.complete(g); subiu = g.intensity > nivelInicial; }
+    else G.nextTurn(g);
+  }
+  check('cumprir cartas faz a noite subir sozinha', subiu, `chegou ao nível ${g.intensity}`);
+
+  const h2 = montar(2, true);
+  h2.momentum = 5;
+  G.roll(h2, () => 0.5);
+  if (h2.play) G.skip(h2);
+  check('pular segura o ritmo', h2.momentum < 5, `embalo ${h2.momentum}`);
+
+  const t = montar(2, true);
+  for (const p of t.players) p.limits.maxIntensity = 2;
+  t.intensity = 2;
+  t.momentum = 99;
+  G.roll(t, () => 0.5);
+  if (t.play) G.complete(t);
+  check('a subida automática respeita o teto individual', t.intensity <= 2, `nível ${t.intensity}`);
+  check('sem espiada quando já se está no teto', G.peekChance(t) === 0);
+}
+
+/* -------------------------------------- experiência de casal (3) */
+
+section('Partida de dois');
+{
+  const abrir = (l) => {
+    L.setGroup(l, 'kisses', 'allow');
+    L.setGroup(l, 'touch', 'allow');
+    L.setGroup(l, 'clothing', 'allow');
+    L.confirmGroup(l, 'sexual');
+    L.confirmGroup(l, 'exposure');
+  };
+  const casal = [
+    mkPlayer('a', 'ANA', 'adulto', 'b', abrir),
+    mkPlayer('b', 'BRU', 'adulto', 'a', abrir)
+  ];
+  const plays = F.viablePlays(
+    { tier: 3, intensity: 4, players: casal, currentId: 'a', rng: () => 0.5 }, 1);
+
+  check('um casal tem bastante carta', plays.length > 80, `${plays.length} jogadas`);
+  check('nenhuma carta de grupo escapa para a mesa de dois',
+    plays.every((p) => (p.card.minPlayers ?? 2) <= 2));
+
+  const comTexto2 = ALL_CARDS.filter((c) => c.text2);
+  check('cartas de grupo têm redação própria para dois',
+    comTexto2.length >= 10, `${comTexto2.length} cartas`);
+
+  // "cada um" funciona bem com duas pessoas; o que soa errado é tratar
+  // o parceiro como se fosse uma plateia.
+  const vazando = plays
+    .map((p) => p.text)
+    .find((t) => /\bTodos\b|\bo grupo\b|\bdo grupo\b|cada jogador|levanta a mão/i.test(t));
+  check('num casal, nenhuma carta fala em "o grupo" ou "todos"',
+    !vazando, vazando ?? 'ok');
+
+  // Numa carta individual não há alvo, mas numa mesa de dois há uma
+  // única outra pessoa: é ela quem dá a nota, decide, assiste.
+  const individuais = plays.filter((p) => p.card.targeting === 'self' && p.card.text2);
+  check('carta individual sabe nomear o parceiro na mesa de dois',
+    individuais.length > 0 && individuais.every((p) => !/o grupo/i.test(p.text)),
+    `${individuais.length} cartas individuais com redação de dois`);
+
+  check('existe conteúdo exclusivo de casal disponível',
+    plays.some((p) => p.card.maxPlayers === 2));
+}
+
+/* ---------------------- bloqueio individual não mata a mesa (4) */
+
+section('Bloqueio vale para quem bloqueou');
+{
+  const quatro = [
+    mkPlayer('a', 'ANA', 'ousado', null, (l) => L.setGroup(l, 'clothing', 'block')),
+    mkPlayer('b', 'BRU', 'ousado', null, (l) => L.setGroup(l, 'clothing', 'allow')),
+    mkPlayer('c', 'CAU', 'ousado', null, (l) => L.setGroup(l, 'clothing', 'allow')),
+    mkPlayer('d', 'DAN', 'ousado', null, (l) => L.setGroup(l, 'clothing', 'allow'))
+  ];
+  const todas = ['a', 'b', 'c', 'd'].flatMap((id) =>
+    F.viablePlays({ tier: 2, intensity: 4, players: quatro, currentId: id, rng: () => 0.5 }, 1));
+  const roupa = todas.filter((p) => p.card.deck === 'clothing');
+
+  const anaTiraria = roupa.filter((p) => {
+    const ana = p.participants.find((x) => x.id === 'a');
+    if (!ana) return false;
+    const geral = (p.card.requires ?? []).some((r) => r.startsWith('clothing_'));
+    const dela = ana.role === 'actor'
+      ? (p.card.requiresActor ?? []).some((r) => r.startsWith('clothing_'))
+      : (p.card.requiresTarget ?? []).some((r) => r.startsWith('clothing_'));
+    return geral || dela;
+  });
+  check('quem bloqueou roupa nunca precisa tirar roupa', anaTiraria.length === 0,
+    anaTiraria.map((p) => p.card.id).join(', '));
+
+  const entreOsOutros = roupa.filter((p) => !p.participants.some((x) => x.id === 'a'));
+  check('um bloqueio NÃO apaga a carta para quem aceitou',
+    entreOsOutros.length > 20, `${entreOsOutros.length} cartas de roupa entre os outros`);
+
+  // Toda carta cujo texto manda alguém tirar roupa precisa declarar isso,
+  // senão ela escaparia do bloqueio de quem não quer tirar.
+  // Tem que ser tirar ROUPA: "não tira a mão" e "tira uma foto" não contam.
+  const tiraRoupa = /\btirar?\b[^.;]{0,26}\b(peça|roupa|camisa|blusa|calça|shorts|saia|casaco|sapatos?|meias?|acessório)/i;
+  const ficaNu = /sai inteira|fica sem a|toda a roupa|completamente nu|só de roupa íntima/i;
+
+  const semDeclarar = ALL_CARDS.filter((c) => {
+    const texto = `${c.text} ${c.text2 ?? ''}`;
+    if (!tiraRoupa.test(texto) && !ficaNu.test(texto)) return false;
+    const declarados = [...(c.requires ?? []), ...(c.requiresActor ?? []), ...(c.requiresTarget ?? [])];
+    if (declarados.some((r) => r.startsWith('clothing_'))) return false;
+    return !Object.values(c.slots ?? {}).some((sl) => sl.pool === 'clothing');
+  });
+  check('nenhuma carta manda tirar roupa sem declarar o limite',
+    semDeclarar.length === 0, semDeclarar.map((c) => c.id).join(', '));
 }
 
 /* ------------------------------------------------------------ fim */

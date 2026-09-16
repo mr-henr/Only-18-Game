@@ -31,14 +31,14 @@ Quantas cartas de cada baralho cada formato enxerga. Cartas marcadas
 
 | Baralho | 👤👤 Casal | 👥 Grupo | Só casal | Só grupo |
 |---|---|---|---|---|
-| 💬 Perguntas | 33 | 39 | 4 | 10 |
+| 💬 Perguntas | 32 | 39 | 4 | 11 |
 | 🎯 Desafios sociais | 22 | 33 | 4 | 15 |
 | 💋 Beijos e contato físico | 37 | 45 | 3 | 11 |
 | 👕 Roupa | 18 | 23 | 2 | 7 |
 | 🔞 Conteúdo sexual | 28 | 28 | 4 | 4 |
 | ⛓️ Poder e exposição | 22 | 26 | 3 | 7 |
 | 🍻 Bebida | 22 | 29 | 0 | 7 |
-| **Total** | **182** | **223** | 20 | 61 |
+| **Total** | **181** | **223** | 20 | 62 |
 
 🍻 **29 cartas de bebida.** Só entram se o grupo ligar "jogar com bebida" na
 criação da partida — e, mesmo assim, cada jogador filtra o que aceita na aba 🍻 dos limites.
@@ -62,7 +62,7 @@ Aparecem em **todos** os modos.
 |---|---|---|---|---|---|
 | `q_topic_self` | {actor}, conte para o grupo sobre {topic.label}. Sem economizar detalhes. | Pergunta | 1–5 | só quem joga | `{topic}` → 15 valores de `questionTopics`, cada valor exige o limite dele |
 | `q_topic_asked` | {target} quer saber de {actor}: {topic.label}. Sem enrolar. | Pergunta | 1–5 | sobre outro | `{topic}` → 15 valores de `questionTopics`, cada valor exige o limite dele |
-| `q_topic_guess` | Antes de {actor} responder, o grupo chuta: {topic.label}. Quem chegar mais perto escolhe a próxima carta. | Escolha | 1–4 | grupo todo | `{topic}` → 15 valores de `questionTopics`, cada valor exige o limite dele |
+| `q_topic_guess` | Antes de {actor} responder, o grupo chuta: {topic.label}. Quem chegar mais perto escolhe a próxima carta. | Escolha | 1–4 | grupo todo 👥3+ | `{topic}` → 15 valores de `questionTopics`, cada valor exige o limite dele |
 | `q_topic_private` | 🔒 {actor}, pense na sua resposta sobre {topic.label}. Você decide se conta ou guarda para você. | Pergunta | 2–5 | só quem joga | `{topic}` → 15 valores de `questionTopics`, cada valor exige o limite dele |
 | `q_first_impression` | {actor}, qual foi sua primeira impressão sobre {target} — e o quanto ela mudou? | Pergunta | 1–2 | sobre outro | `q_about_present` |
 | `q_attractive_trait` | {actor}, qual parte do corpo de {target} chama mais sua atenção? | Pergunta | 1–3 | sobre outro | `q_about_present` + `q_body_opinion` |
@@ -251,7 +251,7 @@ Aparecem em Ousado, Adulto, Bate-Pronto e Livre. **Nunca** no Leve.
 | `cl_bet` | {actor} e {target} apostam no par ou ímpar. Quem perder tira uma peça. | Escolha | 2–5 | entre os dois | `clothing_shirt` |
 | `cl_random_pair_bet` | Sorteio! {actor} e {target} disputam no jokenpô. Quem perder tira {piece.label}. | Escolha | 3–5 | sorteio entre 2 👥3+ | `{piece}` → 7 valores de `clothing`, cada valor exige o limite dele |
 | `cl_ransom` | {actor} pode manter {piece.label} se responder uma pergunta íntima do grupo. Se recusar, a peça sai. | Escolha | 2–5 | grupo todo | `q_intimate_personal`<br>`{piece}` → 7 valores de `clothing`, cada valor exige o limite dele |
-| `cl_blind_guess` | {target} fecha os olhos e tenta adivinhar qual peça {actor} está tirando. Se errar, {target} tira uma também. | Desafio | 3–5 | sobre outro | `bdsm_blindfold` + `touch_caress` |
+| `cl_blind_guess` | {target} fecha os olhos e tenta adivinhar qual peça {actor} está tirando. Se errar, {target} tira uma também. | Desafio | 3–5 | sobre outro | `bdsm_blindfold` + `touch_caress`<br>**quem faz:** `clothing_shirt`<br>**quem recebe:** `clothing_shirt` |
 | `cl_to_underwear` | {actor} fica só de roupa íntima até o fim da rodada. | Desafio | 3–5 | só quem joga | `clothing_to_underwear` |
 | `cl_stay_without` | {actor} fica sem {piece.label} até o fim da partida. | Desafio | 3–5 | só quem joga | `{piece}` → 7 valores de `clothing`, a partir do nível 2, cada valor exige o limite dele |
 | `cl_partial_nude` | {actor} escolhe: parte de cima ou parte de baixo. A escolhida sai inteira. | Desafio | 4–5 | só quem joga | `clothing_partial_nude` |

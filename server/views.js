@@ -19,9 +19,10 @@ import { getMode } from '../src/data/gameModes.js';
 import { LIMITS_BY_ID } from '../src/data/limitsCatalog.js';
 import {
   PHASES, currentPlayer, intensityCeiling, availablePenalties,
-  readinessReport, noticesFor, summary
+  readinessReport, noticesFor, summary, progressionPlan
 } from '../src/engine/gameEngine.js';
 import { summarize, pendingConfirmations } from '../src/engine/limitsEngine.js';
+import { renderNeutral } from '../src/engine/slotResolver.js';
 import { durationSecondsOf } from './helpers.js';
 import { STAGES, isConnected } from './rooms.js';
 
@@ -69,7 +70,9 @@ function cardFor(room, client) {
     if (me && me === asking) {
       return {
         kind: 'consent',
-        text: play.text,
+        // Sem nomes ate aceitar: quem responde julga o desafio, nao o alvo.
+        text: renderNeutral(play.card, play.values, play.participants, me,
+          game.players),
         limits: [...new Set(play.usedLimits)]
           .filter((id) => LIMITS_BY_ID[id])
           .map((id) => LIMITS_BY_ID[id].label)
@@ -171,6 +174,7 @@ export function viewFor(room, client) {
     roll: game.roll,
     effectiveIntensity: game.effectiveIntensity ?? game.intensity,
     penalties: { selected: game.penalties, custom: game.customPenalty },
+    progress: progressionPlan(game),
     pendingPenalty: game.pendingPenalty,
     card: cardFor(room, client)
   };

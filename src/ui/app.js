@@ -145,7 +145,7 @@ function topbar() {
   return h('header', { class: 'topbar' },
     h('div', { class: 'brand' },
       h('b', {}, 'NOITE DE DESAFIOS'),
-      h('span', { class: 'hide-sm' }, 'v0.6 · 18+')
+      h('span', { class: 'hide-sm' }, 'v0.7 · 18+')
     ),
     right
   );

@@ -9,7 +9,7 @@
  */
 
 import { getMode } from '../data/gameModes.js';
-import { createLimitState, pendingConfirmations, effectiveState } from './limitsEngine.js';
+import { createLimitState, pendingConfirmations, effectiveState, summarize } from './limitsEngine.js';
 import { selectCard, partnerNotices, contentCoverage } from './contentFilter.js';
 import { rollDice, diceToFilter } from './diceEngine.js';
 import { PENALTIES, penalty, CUSTOM_PENALTY_ID } from '../data/penalties.js';
@@ -47,6 +47,9 @@ export function createGame({ modeId, screenMode = 'single', alcohol = false, roo
     phase: PHASES.SETUP,
     roll: null,
     play: null,
+    /** Embalo: sobe a cada carta cumprida, derruba a cada carta pulada. */
+    momentum: 0,
+    autoRaisedAt: null,
     /** Prendas combinadas pelo grupo. Vazio = pular não custa nada. */
     penalties: [],
     customPenalty: '',
@@ -217,6 +220,8 @@ export function roll(game, rng = Math.random) {
   game.play = selectCard({
     tier: game.tier,
     alcohol: game.alcohol,
+    peek: rng() < peekChance(game),
+    peekCeiling: intensityCeiling(game),
     intensity: filter.intensity,
     onlyType: filter.onlyType,
     onlyTargeting: filter.onlyTargeting,
@@ -274,6 +279,11 @@ export function complete(game) {
   }
 
   registerHistory(game, play, 'done');
+
+  // Carta ousada empurra mais que uma pergunta leve.
+  game.momentum += (points.fire ?? 0) >= 5 ? 2 : 1;
+  maybeAutoRaise(game);
+
   return nextTurn(game);
 }
 
@@ -289,6 +299,9 @@ export function skip(game) {
     if (actor) actor.skipped++;
     registerHistory(game, play, 'skipped');
   }
+
+  // Pular é sinal de que o grupo não está pronto para acelerar.
+  game.momentum = Math.max(0, (game.momentum ?? 0) - 1);
 
   if (game.penalties.length || game.customPenalty) {
     game.pendingPenalty = drawPenalty(game);
@@ -347,6 +360,74 @@ export function nextTurn(game) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Progressao natural da intensidade                                   */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Quanto do que existe neste modo o grupo liberou, de 0 a 1.
+ * Uma mesa que permitiu quase tudo esquenta mais rápido; uma que
+ * bloqueou bastante sobe devagar — ou nem sobe, porque o teto já é
+ * baixo.
+ */
+function spiceRatio(game) {
+  if (!game.players.length) return 0;
+  let soma = 0;
+  for (const p of game.players) {
+    const s = summarize(p.limits);
+    const total = s.allow + s.ask + s.block;
+    soma += total ? s.allow / total : 0;
+  }
+  return soma / game.players.length;
+}
+
+/**
+ * Quantas cartas cumpridas faltam para a noite subir sozinha.
+ *
+ * Depende de três coisas, como pedido:
+ *  - quantos jogadores (mais gente = mais turnos por nível, para todo
+ *    mundo passar pela vez antes de o clima mudar);
+ *  - quanto conteúdo picante foi aceito (mesa liberal sobe mais rápido);
+ *  - o embalo atual, que sobe a cada "Feito" e cai a cada "Pular".
+ */
+export function progressionPlan(game) {
+  const spice = spiceRatio(game);
+  const jogadores = Math.max(2, game.players.length);
+  const necessarios = Math.max(2, Math.round(jogadores * (1.7 - spice)));
+  const momentum = game.momentum ?? 0;
+  return {
+    spice,
+    necessarios,
+    momentum,
+    prontidao: Math.min(1, momentum / necessarios),
+    noTeto: game.intensity >= intensityCeiling(game)
+  };
+}
+
+/**
+ * Chance de o jogo soltar uma carta um nível acima do atual.
+ * Começa baixa e cresce conforme o grupo vai cumprindo — é o jeito de
+ * a noite "provar" o próximo degrau antes de subir de vez.
+ */
+export function peekChance(game) {
+  const { prontidao, noTeto } = progressionPlan(game);
+  if (noTeto) return 0;
+  return 0.15 + 0.25 * prontidao;
+}
+
+/** Sobe de nível sozinho quando o embalo acumulado dá conta. */
+function maybeAutoRaise(game) {
+  const { necessarios } = progressionPlan(game);
+  if (game.intensity >= intensityCeiling(game)) return false;
+  if (game.momentum < necessarios) return false;
+
+  game.momentum = 0;
+  game.intensity += 1;
+  game.autoRaisedAt = game.turn;
+  game.log.push({ turn: game.turn, type: 'intensity-auto', to: game.intensity });
+  return true;
+}
+
+/* ------------------------------------------------------------------ */
 /* Intensidade                                                         */
 /* ------------------------------------------------------------------ */
 
@@ -357,12 +438,14 @@ export function raiseIntensity(game) {
     ...game.players.map((p) => p.limits.maxIntensity ?? 5)
   );
   game.intensity = Math.min(game.intensity + 1, ceiling);
+  game.momentum = 0;          // o grupo já subiu na mão; recomeça a contagem
   game.log.push({ turn: game.turn, type: 'intensity-up', to: game.intensity });
   return game;
 }
 
 export function lowerIntensity(game) {
   game.intensity = Math.max(1, game.intensity - 1);
+  game.momentum = 0;
   game.log.push({ turn: game.turn, type: 'intensity-down', to: game.intensity });
   return game;
 }

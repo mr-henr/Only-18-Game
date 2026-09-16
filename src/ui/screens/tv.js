@@ -261,7 +261,15 @@ function playingView(view) {
             class: i < view.intensity ? 'on' : '',
             style: i >= view.ceiling ? { opacity: .25 } : {}
           }))
-        )
+        ),
+        view.progress && !view.progress.noTeto
+          ? h('div', { class: 'momentum', style: { marginTop: '8px' } },
+              h('div', { class: 'momentum-fill', style: { width: `${view.progress.prontidao * 100}%` } }))
+          : null,
+        h('p', { class: 'faint center', style: { marginTop: '6px' } },
+          view.progress?.noTeto
+            ? 'No teto do que foi permitido.'
+            : 'A noite sobe sozinha conforme vocês cumprem as cartas.')
       ),
       h('div', { class: 'actions center' },
         btn('− Baixar', { variant: 'ghost', size: 'sm', onClick: () => send('intensity', { direction: 'down' }) }),

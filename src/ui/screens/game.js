@@ -3,12 +3,13 @@ import { go, setState, store, flash } from '../app.js';
 import { getMode } from '../../data/gameModes.js';
 import { LIMITS_BY_ID } from '../../data/limitsCatalog.js';
 import { dice3d, ROLL_DURATION } from '../components/dice3d.js';
+import { renderNeutral } from '../../engine/slotResolver.js';
 import { play, screenFlash, reducedMotion } from '../fx.js';
 import { timer, durationOf, resetTimer } from '../components/timer.js';
 import {
   PHASES, currentPlayer, roll, complete, skip, answerConsent,
   raiseIntensity, lowerIntensity, intensityCeiling, endGame, playerById,
-  resolvePenalty
+  resolvePenalty, progressionPlan
 } from '../../engine/gameEngine.js';
 
 const TYPE_LABEL = {
@@ -64,8 +65,30 @@ function intensityBar(game) {
         }
       })
     ),
+    progressoDoNivel(game)
+  );
+}
+
+/**
+ * A noite sobe sozinha conforme o grupo cumpre — mostrar o quanto falta
+ * transforma isso em expectativa, em vez de uma mudança inexplicada.
+ */
+function progressoDoNivel(game) {
+  const plano = progressionPlan(game);
+
+  if (plano.noTeto) {
+    return h('p', { class: 'faint', style: { marginTop: '6px' } },
+      'Vocês chegaram ao teto do que foi permitido. Daqui não passa.');
+  }
+
+  const faltam = Math.max(0, plano.necessarios - plano.momentum);
+  return h('div', { style: { marginTop: '8px' } },
+    h('div', { class: 'momentum' },
+      h('div', { class: 'momentum-fill', style: { width: `${plano.prontidao * 100}%` } })),
     h('p', { class: 'faint', style: { marginTop: '6px' } },
-      'A intensidade nunca sobe sozinha — o grupo decide quando avançar.')
+      faltam === 0
+        ? 'A noite vai subir de nível na próxima carta cumprida.'
+        : `A noite esquenta sozinha: mais ${faltam} ${faltam === 1 ? 'carta cumprida' : 'cartas cumpridas'} e o nível sobe. Pular segura o ritmo.`)
   );
 }
 
@@ -116,11 +139,16 @@ function consentScreen(game) {
       h('span', { class: 'eyebrow' }, 'confirmação privada'),
       h('h2', {}, `${player.name}, tudo bem com isto?`),
       h('div', { class: 'card', style: { margin: '16px 0' } },
-        h('div', { class: 'card-text' }, game.play.text)
+        // Sem nomes: a ideia é julgar o DESAFIO, não quem está do outro
+        // lado. Os nomes aparecem depois do "Pode vir".
+        h('div', { class: 'card-text' },
+          renderNeutral(game.play.card, game.play.values, game.play.participants,
+            player.id, game.players))
       ),
       items.length ? h('div', { class: 'pill-row' }, items.map((l) => h('span', { class: 'pill ask' }, l))) : null,
       h('p', { class: 'faint', style: { marginTop: '14px' } },
-        'Recusar não tem penalidade, não custa pontos e o jogo não revela para ninguém quem recusou — apenas troca a carta.'),
+        'O jogo não mostra quem está envolvido até você aceitar — a ideia é você decidir pelo desafio, não pela pessoa. ' +
+        'Recusar não tem penalidade, não custa pontos e ninguém fica sabendo que foi você: o jogo apenas troca a carta.'),
       h('div', { class: 'actions' },
         btn('Não agora', {
           variant: 'danger',

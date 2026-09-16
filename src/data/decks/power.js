@@ -140,6 +140,7 @@ export const POWER = [
     targeting: 'all', visibility: 'public',
     requiresActor: ['exposure_body_players'],
     text: '{actor} mostra para o grupo a parte do corpo de que mais se orgulha.',
+    text2: '{actor} mostra para {target} a parte do corpo de que mais se orgulha.',
     points: { love: 1, fire: 5 }
   },
   {
@@ -149,6 +150,7 @@ export const POWER = [
     requiresActor: ['exposure_watched'],
     slots: { duration: { pool: 'durations', filter: { minTier: 2 } } },
     text: 'Todos param e observam {actor} por {duration.label}. {actor} decide o que fazer nesse tempo.',
+    text2: '{target} para tudo e observa {actor} por {duration.label}. {actor} decide o que fazer nesse tempo.',
     points: { love: 2, fire: 5 }
   },
   {
@@ -177,6 +179,7 @@ export const POWER = [
     targeting: 'all', visibility: 'public',
     requiresActor: ['exposure_intimate_players'],
     text: '{actor} mostra para o grupo. Sem pressa, sem esconder.',
+    text2: '{actor} mostra para {target}. Sem pressa, sem esconder.',
     points: { love: 1, fire: 8 }
   },
   {

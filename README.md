@@ -1,4 +1,4 @@
-# Noite de Desafios — v0.6
+# Noite de Desafios — v0.7
 
 Jogo social adulto (18+) com dados, cartas paramétricas e sistema de limites
 individuais. Roda no navegador, em celular, PC ou TV.
@@ -76,7 +76,7 @@ Dá para combinar: interface no Pages e servidor em outro lugar. Crie a
 esse endereço sozinha.
 
 A cada push na `main`, o workflow `.github/workflows/pages.yml` roda
-`npm run check` (as 78 verificações de regra, privacidade e autorização),
+`npm run check` (as 99 verificações de regra, privacidade e autorização),
 confere se `docs/CARTAS.md` está atualizado e só então publica.
 
 > **Antes de publicar em qualquer lugar:** o conteúdo é adulto e explícito.
@@ -172,9 +172,16 @@ duas coisas. `npm run check` falha se esse equilíbrio se perder.
 **1. Teto do modo.** Cartas e limites acima do `tier` do modo nem são
 carregados. É impossível chegar a conteúdo do Modo 3 jogando no Modo 1.
 
-**2. Pior estado vence.** Um requisito é avaliado contra *todos* os envolvidos.
-Basta um bloquear para a carta não existir para aquele grupo. Se alguém marcou
-"perguntar antes", a carta entra com confirmação privada — e recusar não custa
+**2. O bloqueio vale para quem bloqueou.** Um requisito é avaliado contra quem
+**participa** da carta, e no papel em que participa. Quem bloqueou roupa nunca
+precisa tirar a própria roupa — mas as cartas de roupa entre as outras pessoas
+continuam existindo normalmente. Bloquear protege você, não apaga o jogo dos
+outros. A exceção é a carta que envolve a mesa inteira: nessa, todos precisam
+topar.
+
+Se alguém marcou "perguntar antes", a carta entra com confirmação privada — e
+**sem os nomes de quem está envolvido**, para a decisão ser sobre o desafio e
+não sobre a pessoa. Os nomes aparecem depois do "Pode vir". Recusar não custa
 pontos nem revela quem recusou.
 
 **3. Dupla confirmação.** Permitir "Beijo nos genitais" na aba 💋 pré-marca
@@ -230,6 +237,37 @@ baralho
 Os dados são uma **sugestão**, nunca uma obrigação: se o resultado exato não tem
 carta viável, o filtro afrouxa nesta ordem — alvo, tipo, intensidade — em vez de
 travar o turno ou forçar conteúdo bloqueado.
+
+## A noite sobe sozinha (v0.7)
+
+A partida começa leve e vai esquentando conforme o grupo joga — sem ninguém
+precisar apertar nada. O ritmo sai de três coisas:
+
+| | efeito |
+|---|---|
+| **Quantos jogadores** | mais gente = mais cartas por nível, para todo mundo passar pela vez antes de o clima mudar |
+| **Quanto foi liberado** | mesa que permitiu quase tudo sobe rápido; mesa restrita sobe devagar |
+| **Cumprir ou pular** | cada "Feito" empurra (carta ousada vale por duas); cada "Pular" segura |
+
+Na prática: um casal que liberou tudo sobe a cada 2 cartas cumpridas; um grupo
+de seis com bastante bloqueio leva 9. A barrinha abaixo da intensidade mostra o
+quanto falta, e o texto avisa — a mudança nunca é inexplicada.
+
+De vez em quando o jogo **solta uma carta um nível acima** do atual, para o
+grupo sentir o próximo degrau antes de subir de vez. A chance começa em 15% e
+cresce conforme o embalo. Nunca passa do teto do modo nem do menor limite
+individual da mesa. E os botões de subir e baixar na mão continuam ali.
+
+## Partida de dois (v0.7)
+
+Cartas escritas para grupo ganharam uma **segunda redação** para quando só
+existem duas pessoas: "o grupo dá nota" vira "{target} dá a nota", "todos
+bebem" vira "os dois bebem". São 19 cartas com redação própria, e o motor
+escolhe sozinho pelo tamanho da mesa.
+
+Cartas que só funcionam com plateia (votação, "quem chegar mais perto") ficam
+de fora de uma mesa de dois, e as escritas para casal ganham prioridade no
+sorteio. Um casal no Modo Adulto tem 145 jogadas possíveis.
 
 ## Tutorial e clareza (v0.6)
 

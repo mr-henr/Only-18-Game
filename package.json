@@ -1,7 +1,7 @@
 {
   "name": "noite-de-desafios",
   "private": true,
-  "version": "0.6.0",
+  "version": "0.7.0",
   "type": "module",
   "description": "Jogo social adulto (18+) com dados, cartas parametricas e sistema de limites individuais.",
   "scripts": {

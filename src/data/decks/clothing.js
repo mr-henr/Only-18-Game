@@ -95,6 +95,7 @@ export const CLOTHING = [
     requires: ['q_intimate_personal'],
     slots: { piece: { pool: 'clothing', limitKey: '{limit}', appliesTo: 'actor' } },
     text: '{actor} pode manter {piece.label} se responder uma pergunta íntima do grupo. Se recusar, a peça sai.',
+    text2: '{actor} pode manter {piece.label} se responder uma pergunta íntima de {target}. Se recusar, a peça sai.',
     points: { love: 2, fire: 4 }
   },
   {
@@ -102,6 +103,10 @@ export const CLOTHING = [
     deck: 'clothing', type: 'challenge', minMode: 2, intensity: [3, 5],
     targeting: 'other', visibility: 'public',
     requires: ['bdsm_blindfold', 'touch_caress'],
+    requiresActor: ['clothing_shirt'],
+    // O texto diz que quem erra também tira: então isso precisa estar
+    // declarado, senão a carta chegaria a quem bloqueou roupa.
+    requiresTarget: ['clothing_shirt'],
     text: '{target} fecha os olhos e tenta adivinhar qual peça {actor} está tirando. Se errar, {target} tira uma também.',
     points: { love: 2, fire: 4 }
   },
@@ -144,6 +149,7 @@ export const CLOTHING = [
     requires: ['clothing_to_underwear', 'exposure_watched'],
     slots: { duration: { pool: 'durations', filter: { minTier: 3 } } },
     text: '{actor} tem {duration.label} de música para tirar uma peça por vez enquanto todos assistem.',
+    text2: '{actor} tem {duration.label} de música para tirar uma peça por vez, com {target} assistindo de perto.',
     points: { love: 2, fire: 6 }
   },
   {
@@ -153,6 +159,7 @@ export const CLOTHING = [
     requiresActor: ['exposure_body_players'],
     slots: { piece: { pool: 'clothing', filter: { minTier: 2 }, limitKey: '{limit}', appliesTo: 'actor' } },
     text: '{actor} mostra para o grupo o que está por baixo de {piece.label} — sem tirar a peça.',
+    text2: '{actor} mostra para {target} o que está por baixo de {piece.label} — sem tirar a peça.',
     points: { love: 1, fire: 5 }
   },
   {

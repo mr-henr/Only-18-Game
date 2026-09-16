@@ -28,6 +28,7 @@ export const DRINKS = [
     targeting: 'all', visibility: 'public',
     slots: { amount: { pool: 'drinkAmount', limitKey: '{limit}' } },
     text: '{actor} faz um brinde constrangedor em voz alta. Todos bebem {amount.label}.',
+    text2: '{actor} faz um brinde constrangedor em voz alta. Os dois bebem {amount.label}.',
     points: { love: 3, fire: 2 }
   },
   {
@@ -36,6 +37,7 @@ export const DRINKS = [
     targeting: 'all', visibility: 'public',
     slots: { amount: { pool: 'drinkAmount', limitKey: '{limit}' } },
     text: 'Todos bebem {amount.label} ao mesmo tempo. O último a terminar cumpre o próximo desafio em dobro.',
+    text2: 'Os dois bebem {amount.label} ao mesmo tempo. Quem terminar por último cumpre o próximo desafio em dobro.',
     points: { love: 2, fire: 3 }
   },
   {
@@ -110,6 +112,7 @@ export const DRINKS = [
     requires: ['q_confession'],
     slots: { amount: { pool: 'drinkAmount', limitKey: '{limit}' } },
     text: '{actor} conta um segredo de verdade ou bebe {amount.label}. O grupo decide se o segredo valeu.',
+    text2: '{actor} conta um segredo de verdade ou bebe {amount.label}. {target} decide se o segredo valeu.',
     points: { love: 3, fire: 3 }
   },
   {

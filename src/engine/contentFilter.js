@@ -13,9 +13,15 @@
  *    -> weight          desejos, variedade, repeticao recente
  *    -> pick
  *
- * Regra inviolavel: basta UM envolvido bloquear para a carta nao existir
- * para aquele grupo. Se alguem marcou "perguntar antes", a carta entra
- * com pedido de confirmacao privado.
+ * Regra inviolavel: o bloqueio vale para QUEM ENVOLVE. Uma carta so e
+ * descartada se alguem que PARTICIPA dela bloqueou o que ela pede — e
+ * so no papel em que participa. Quem bloqueou roupa nao tira roupa,
+ * mas continua podendo tirar a de quem aceitou; e as cartas de roupa
+ * entre os outros seguem existindo normalmente.
+ *
+ * Se alguem marcou "perguntar antes", a carta entra com pedido de
+ * confirmacao privado — e sem os nomes, para a pessoa julgar o desafio
+ * e nao o alvo.
  */
 
 import { deckForMode } from '../data/decks/index.js';
@@ -206,6 +212,14 @@ function evaluateRequirements(card, participants, allPlayers = participants) {
 function weightFor(play, ctx) {
   let w = 10;
 
+  // Numa partida de dois, a carta escrita para casal ganha prioridade:
+  // "o grupo vota" existe, mas "vocês dois" é o que faz a noite.
+  if (ctx.players.length === 2 && play.card.maxPlayers === 2) w += 10;
+
+  // Carta espiada (acima do nível atual) aparece, mas com parcimônia.
+  const [minI] = play.card.intensity ?? [1, 5];
+  if (minI > ctx.intensity) w = Math.max(1, w * 0.35);
+
   // Desejos declarados (modo Livre) puxam a carta para cima.
   for (const p of play.participants) {
     const wishes = p.limits.wishlist ?? [];
@@ -257,6 +271,14 @@ export function viablePlays(ctx, relax = 0) {
   const deck = deckForMode(tier, { alcohol });
   const plays = [];
 
+  /**
+   * ESPIADA — de vez em quando o jogo solta uma carta um nível acima do
+   * atual, para o grupo sentir o próximo degrau antes de subir de vez.
+   * Nunca passa do teto: `ctx.peekCeiling` já vem limitado pelo modo e
+   * pelo menor limite individual da mesa.
+   */
+  const tetoDaVez = ctx.peek ? Math.min(intensity + 1, ctx.peekCeiling ?? intensity) : intensity;
+
   for (const card of deck) {
     const [minI, maxI] = card.intensity ?? [1, 5];
 
@@ -265,7 +287,7 @@ export function viablePlays(ctx, relax = 0) {
     if ((card.minPlayers ?? 2) > players.length) continue;
     if (card.maxPlayers && players.length > card.maxPlayers) continue;
 
-    if (minI > intensity) continue;                       // ainda nao liberada
+    if (minI > tetoDaVez) continue;                       // ainda nao liberada
     if (relax === 0 && maxI < intensity) continue;        // defasada demais
     if (ctx.onlyType && card.type !== ctx.onlyType) continue;
     if (ctx.onlyTargeting && !ctx.onlyTargeting.includes(card.targeting)) continue;
@@ -292,7 +314,8 @@ export function viablePlays(ctx, relax = 0) {
         worst,
         askers: [...askers],
         usedLimits: [...req.used, ...slots.usedLimits],
-        text: renderText(card, slots.values, participants)
+        text: renderText(card, slots.values, participants, players),
+        playerCount: players.length
       });
     }
   }

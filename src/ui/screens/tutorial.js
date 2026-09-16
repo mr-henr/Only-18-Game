@@ -64,7 +64,7 @@ const ESCOLHAS = {
   },
   block: {
     icon: '🚫', nome: 'Bloquear',
-    frase: 'Nunca aparece. Nem para você, nem para ninguém da mesa — o jogo simplesmente não sorteia essa carta.'
+    frase: 'Nunca chega até você — nem a seu favor, nem contra. Entre as pessoas que aceitaram, as cartas com isso continuam aparecendo normalmente.'
   }
 };
 
@@ -129,14 +129,25 @@ const STEPS = [
     alto: true
   },
   {
-    titulo: 'Basta uma pessoa bloquear',
-    texto: 'Se qualquer um dos envolvidos bloqueou aquilo, a carta não é sorteada. Não aparece e some — não existe para aquela mesa. E ninguém vê o que os outros marcaram.',
+    titulo: 'O que você bloqueia vale para você',
+    texto: 'Bloquear não estraga o jogo para os outros. Aquelas cartas simplesmente deixam de te alcançar — nem a seu favor, nem contra. Entre quem aceitou, elas continuam aparecendo normalmente.',
     visual: () => h('div', { class: 'tutorial-visual' },
       h('div', { class: 'block-demo' },
-        h('span', { class: 'pill allow' }, 'ANA ✅'),
-        h('span', { class: 'pill block' }, 'BRUNO 🚫'),
+        h('span', { class: 'pill block' }, 'BRUNO 🚫 roupa'),
         h('span', { class: 'arrow' }, '→'),
-        h('span', { class: 'pill' }, 'a carta nem é sorteada')))
+        h('span', { class: 'pill' }, 'nenhuma carta de roupa chega a BRUNO'),
+        h('span', { class: 'arrow' }, '·'),
+        h('span', { class: 'pill allow' }, 'entre ANA e CARLA, continua')))
+  },
+  {
+    titulo: 'E ninguém vê o que você marcou',
+    texto: 'Sua lista é só sua. Quando uma carta mexe em algo que você pôs como "perguntar antes", o jogo pergunta em particular — e sem dizer quem está envolvido, para você julgar o desafio e não a pessoa.',
+    visual: () => h('div', { class: 'tutorial-visual' },
+      h('div', { class: 'card tutorial-card' },
+        h('div', { class: 'card-type' }, '🔒 Confirmação privada'),
+        h('div', { class: 'card-text' }, 'Você dá um beijo demorado na outra pessoa — no pescoço.'),
+        h('div', { class: 'card-meta' },
+          h('span', { class: 'pill ask' }, 'Beijo no pescoço'))))
   },
   {
     titulo: 'Tem carta que só você lê',
@@ -147,8 +158,8 @@ const STEPS = [
         h('div', { class: 'back-label' }, 'Só você deve ler')))
   },
   {
-    titulo: 'A intensidade sobe quando vocês quiserem',
-    texto: 'A partida começa leve. Quando o grupo quiser, aperta "subir" e as cartas ficam mais ousadas — sempre dentro do que cada um marcou. Ela nunca sobe sozinha.',
+    titulo: 'A noite vai esquentando sozinha',
+    texto: 'A partida começa leve. Conforme vocês vão cumprindo as cartas, o jogo entende que pode ousar mais e sobe de nível — e de vez em quando solta uma carta mais quente antes da hora, para sentir o clima. Pular segura o ritmo. E vocês podem subir ou baixar na mão quando quiserem.',
     visual: () => h('div', { class: 'tutorial-visual' },
       h('div', { class: 'track demo-track' },
         Array.from({ length: 5 }, (_, i) => h('i', { class: i < 3 ? 'on' : '' })))),

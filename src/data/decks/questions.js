@@ -17,6 +17,7 @@ export const QUESTIONS = [
     targeting: 'self', visibility: 'public',
     slots: { topic: { pool: 'questionTopics', limitKey: '{limit}', appliesTo: 'actor' } },
     text: '{actor}, conte para o grupo sobre {topic.label}. Sem economizar detalhes.',
+    text2: '{actor}, conte sobre {topic.label}. Sem economizar detalhes, sem pular a parte constrangedora.',
     points: { love: 2, fire: 2 }
   },
   {
@@ -29,7 +30,7 @@ export const QUESTIONS = [
   },
   {
     id: 'q_topic_guess',
-    deck: 'questions', type: 'choice', minMode: 1, intensity: [1, 4],
+    deck: 'questions', type: 'choice', minMode: 1, minPlayers: 3, intensity: [1, 4],
     targeting: 'all', visibility: 'public',
     slots: { topic: { pool: 'questionTopics', limitKey: '{limit}', appliesTo: 'actor' } },
     text: 'Antes de {actor} responder, o grupo chuta: {topic.label}. Quem chegar mais perto escolhe a próxima carta.',
@@ -213,6 +214,7 @@ export const QUESTIONS = [
     targeting: 'all', visibility: 'public',
     requires: ['q_intimate_personal'],
     text: '{actor} conta três coisas picantes sobre si — duas verdadeiras e uma mentira. Os outros votam na mentira.',
+    text2: '{actor} conta três coisas picantes sobre si — duas verdadeiras e uma mentira. {target} tenta achar qual é a mentira.',
     points: { love: 2, fire: 2 }
   },
   {
@@ -245,6 +247,7 @@ export const QUESTIONS = [
     targeting: 'all', visibility: 'public',
     requires: ['q_confession'],
     text: 'Ao mesmo tempo, cada um diz UMA palavra: o que você faria agora se ninguém fosse julgar?',
+    text2: 'No três, os dois dizem UMA palavra ao mesmo tempo: o que você faria agora se ninguém fosse julgar?',
     points: { love: 3, fire: 3 }
   },
   {
@@ -261,6 +264,7 @@ export const QUESTIONS = [
     targeting: 'all', visibility: 'public',
     requires: ['q_sexual_experiences'],
     text: '{actor} diz um "eu nunca" de teor sexual. Quem já fez, levanta a mão.',
+    text2: '{actor} diz um "eu nunca" de teor sexual. Se {target} já fez, tem que contar como foi.',
     points: { love: 2, fire: 2 }
   },
 

@@ -150,7 +150,7 @@ export function limitsEditor(o) {
     h('div', { class: 'states-legend' },
       h('div', { class: 's-allow' }, h('b', {}, '✅ Permitir'), 'Pode acontecer sem o jogo perguntar.'),
       h('div', { class: 's-ask' }, h('b', {}, '⚠️ Perguntar'), 'Só depois de o jogo perguntar a você, em particular.'),
-      h('div', { class: 's-block' }, h('b', {}, '🚫 Bloquear'), 'Nunca aparece, para ninguém da mesa.')
+      h('div', { class: 's-block' }, h('b', {}, '🚫 Bloquear'), 'Nunca chega até você. Entre os outros que aceitaram, continua valendo.')
     ),
 
     h('details', { class: 'helpbox' },
@@ -161,6 +161,8 @@ export function limitsEditor(o) {
           h('dd', {}, 'Não. O jogo já deixou cada item num estado razoável para o modo que vocês escolheram. Mexa só no que te incomoda.'),
           h('dt', {}, 'Alguém vai ver o que eu marquei?'),
           h('dd', {}, 'Ninguém. Nem os outros jogadores, nem a tela grande. O jogo só usa isso para escolher as cartas.'),
+          h('dt', {}, 'Se eu bloquear, estrago o jogo para os outros?'),
+          h('dd', {}, 'Não. O bloqueio é seu: aquelas cartas deixam de te alcançar. Entre as pessoas que aceitaram, elas continuam aparecendo normalmente. A única exceção é a carta que envolve a mesa inteira de uma vez — nessa, todo mundo precisa topar.'),
           h('dt', {}, 'Por que alguns itens já vêm marcados de amarelo?'),
           h('dd', {}, 'Porque você permitiu a mesma coisa em outra aba, com outro nome. O jogo traz aqui para você confirmar com todas as letras — até confirmar, ele pergunta antes de usar.'),
           h('dt', {}, 'E se eu me arrepender no meio do jogo?'),
@@ -227,7 +229,7 @@ export function limitsEditor(o) {
     ),
 
     h('p', { class: 'faint center legend' },
-      'Basta uma pessoa bloquear para a carta nunca aparecer — nem para ela, nem para o resto da mesa.')
+      'O que você bloqueia vale para você: nenhuma carta com aquilo chega até você, nem a seu favor nem contra. Entre quem aceitou, o jogo segue normal.')
   );
 }
 

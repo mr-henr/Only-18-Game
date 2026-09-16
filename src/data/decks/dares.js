@@ -16,6 +16,7 @@ export const DARES = [
     targeting: 'self', visibility: 'public',
     requires: ['q_embarrassing'],
     text: '{actor}, atravesse o ambiente do jeito mais sensual que conseguir. O grupo dá nota de 0 a 10.',
+    text2: '{actor}, atravesse o ambiente do jeito mais sensual que conseguir. {target} dá uma nota de 0 a 10.',
     points: { love: 1, fire: 3 }
   },
   {
@@ -25,6 +26,7 @@ export const DARES = [
     requires: ['q_embarrassing'],
     slots: { place: { pool: 'places' }, modifier: { pool: 'modifier' } },
     text: '{actor} faz a pose mais sensual que conseguir {place.label}, {modifier.label}. O grupo dá nota.',
+    text2: '{actor} faz a pose mais sensual que conseguir {place.label}, {modifier.label}. {target} dá a nota.',
     points: { love: 1, fire: 3 }
   },
   {
@@ -34,6 +36,7 @@ export const DARES = [
     requires: ['q_embarrassing'],
     slots: { duration: { pool: 'durations' } },
     text: '{actor}, gema de forma convincente por {duration.label}. Olhando para o grupo.',
+    text2: '{actor}, gema de forma convincente por {duration.label}. Olhando nos olhos, sem rir.',
     points: { love: 0, fire: 4 }
   },
   {
@@ -58,6 +61,7 @@ export const DARES = [
     targeting: 'self', visibility: 'public',
     requires: ['q_intimate_personal'],
     text: '{actor} escolhe: responder uma pergunta íntima do grupo, ou cumprir o próximo desafio com intensidade dobrada.',
+    text2: '{actor} escolhe: responder uma pergunta íntima, ou cumprir o próximo desafio com intensidade dobrada.',
     points: { love: 2, fire: 3 }
   },
   {
@@ -134,6 +138,7 @@ export const DARES = [
     targeting: 'all', visibility: 'public',
     requires: ['q_body_opinion'],
     text: '{actor} faz um elogio sincero e específico para cada jogador. Sem repetir palavra.',
+    text2: '{actor} faz três elogios sinceros e específicos para {target}. Sem repetir palavra.',
     points: { love: 4, fire: 1 }
   },
   {
@@ -158,6 +163,7 @@ export const DARES = [
     targeting: 'all', visibility: 'public',
     slots: { duration: { pool: 'durations' } },
     text: 'Ao sinal de {actor}, todos congelam na posição em que estiverem por {duration.label}. Quem se mexer paga uma prenda.',
+    text2: 'Ao sinal de {actor}, os dois congelam na posição em que estiverem por {duration.label}. Quem se mexer paga uma prenda.',
     points: { love: 2, fire: 2 }
   },
   {

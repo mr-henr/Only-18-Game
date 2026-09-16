@@ -128,23 +128,102 @@ export function countVariations(card, participants, intensity) {
 /* Montagem do texto final                                             */
 /* ------------------------------------------------------------------ */
 
-/**
- * Substitui {actor}, {target} e {slot} / {slot.campo} pelo texto final.
- */
-export function renderText(card, values, participants) {
-  const actor = participants.find((p) => p.role === 'actor');
-  const targets = participants.filter((p) => p.role === 'target');
+const maiuscula = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-  const names = {
-    actor: actor?.name ?? 'Você',
-    target: targets.map((t) => t.name).join(' e ') || 'o grupo'
-  };
+/** O nome cai no começo de uma frase? Aí precisa de maiúscula. */
+function comecaFrase(template, offset) {
+  if (offset === 0) return true;
+  const antes = template.slice(0, offset).trimEnd();
+  return antes === '' || /[.!?]$/.test(antes);
+}
 
-  return card.text.replace(/\{(\w+)(?:\.(\w+))?\}/g, (match, key, field) => {
-    if (key in names && !field) return names[key];
+function fill(template, values, names) {
+  return template.replace(/\{(\w+)(?:\.(\w+))?\}/g, (match, key, field, offset) => {
+    if (key in names && !field) {
+      const nome = names[key];
+      return comecaFrase(template, offset) ? maiuscula(nome) : nome;
+    }
     const value = values?.[key];
     if (value == null) return match;
     if (field) return value[field] ?? match;
     return value.label ?? match;
   });
+}
+
+/**
+ * Escolhe o molde de texto. Cartas de grupo podem trazer `text2`, uma
+ * redação que funciona quando só existem duas pessoas: "o grupo" e
+ * "todos" soam errados num casal.
+ */
+export function templateFor(card, playerCount) {
+  return (playerCount === 2 && card.text2) ? card.text2 : card.text;
+}
+
+/**
+ * Numa carta individual não existe alvo — mas numa mesa de dois existe
+ * uma única outra pessoa, e é ela quem dá a nota, decide, assiste. Sem
+ * isso, `{target}` cairia no genérico "o grupo" justo onde ele soa pior.
+ */
+function outroNome(participants, roster) {
+  if (!Array.isArray(roster) || roster.length !== 2) return null;
+  const presentes = new Set(participants.map((p) => p.id));
+  return roster.find((p) => !presentes.has(p.id))?.name ?? null;
+}
+
+/**
+ * Substitui {actor}, {target} e {slot} / {slot.campo} pelo texto final.
+ * @param {array|number} roster  a mesa inteira (ou só o tamanho dela)
+ */
+export function renderText(card, values, participants, roster = 0) {
+  const playerCount = Array.isArray(roster) ? roster.length : roster;
+  const actor = participants.find((p) => p.role === 'actor');
+  const targets = participants.filter((p) => p.role === 'target');
+
+  const names = {
+    actor: actor?.name ?? 'Você',
+    target: targets.map((t) => t.name).join(' e ')
+      || outroNome(participants, roster)
+      || 'o grupo'
+  };
+
+  return fill(templateFor(card, playerCount), values, names);
+}
+
+/**
+ * Trocar "ANA" por "a outra pessoa" quebra a crase do português:
+ * "beijo em ANA" vira "beijo em a outra pessoa". Aqui recolamos as
+ * preposições que a substituição desfez.
+ */
+function contrair(texto) {
+  // As bordas de palavra sao essenciais: sem elas "sem a" viraria
+  // "sna", porque "sem" tambem termina em "em".
+  return texto
+    .replace(/\b([Ee]m) (a|as|o|os)\b/g, (_, p, art) => (p === 'Em' ? 'N' : 'n') + art)
+    .replace(/\b([Dd]e) (a|as|o|os)\b/g, (_, p, art) => (p === 'De' ? 'D' : 'd') + art)
+    .replace(/\b([Pp]or) (a|as|o|os)\b/g, (_, p, art) => (p === 'Por' ? 'Pel' : 'pel') + art);
+}
+
+/**
+ * A MESMA carta, sem dizer quem está envolvido.
+ *
+ * Usada na confirmação privada: quem vai responder precisa julgar o
+ * DESAFIO, não as pessoas. Ver o nome do alvo antes de aceitar muda a
+ * resposta — e é exatamente isso que queremos evitar.
+ */
+export function renderNeutral(card, values, participants, viewerId, roster = 0) {
+  const playerCount = Array.isArray(roster) ? roster.length : roster;
+  const actor = participants.find((p) => p.role === 'actor');
+  const targets = participants.filter((p) => p.role !== 'actor');
+  const euSouActor = actor?.id === viewerId;
+
+  const outro = targets.length > 1 ? 'os outros' : 'a outra pessoa';
+
+  const names = {
+    actor: euSouActor ? 'você' : outro,
+    target: euSouActor
+      ? outro
+      : (targets.some((t) => t.id === viewerId) ? 'você' : outro)
+  };
+
+  return contrair(fill(templateFor(card, playerCount), values, names));
 }
