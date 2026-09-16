@@ -182,11 +182,36 @@ export const LIMITS = [
     ],
     default: 'any_player'
   },
-  { id: 'dyn_random_pair', group: 'dynamics', minMode: 1, label: 'Desafios entre duas pessoas sorteadas' },
-  { id: 'dyn_more_than_two', group: 'dynamics', minMode: 1, label: 'Desafios envolvendo mais de duas pessoas' },
-  { id: 'dyn_group', group: 'dynamics', minMode: 1, label: 'Desafios coletivos (todos ao mesmo tempo)' },
-  { id: 'dyn_watch', group: 'dynamics', minMode: 2, label: 'Assistir dois jogadores cumprindo um desafio' },
-  { id: 'dyn_be_watched', group: 'dynamics', minMode: 2, label: 'Cumprir um desafio sendo assistido' }
+  /* Estes itens dizem COM QUANTAS pessoas a ação acontece, nao o quao
+     forte ela e. Por isso a lista nao muda quando voce troca a sua
+     intensidade maxima: sao coisas diferentes. Os exemplos abaixo
+     comecam pelos leves de proposito — a maioria destas cartas nao
+     tem nada de sexual. */
+  {
+    id: 'dyn_random_pair', group: 'dynamics', minMode: 1,
+    label: 'Desafios entre duas pessoas sorteadas',
+    hint: 'O jogo sorteia uma dupla, que pode nem incluir quem está na vez. Ex.: achar algo em comum que ninguém sabe, encenar uma cena para os outros adivinharem, disputar no jokenpô. Nos modos mais fortes, também contato físico.'
+  },
+  {
+    id: 'dyn_more_than_two', group: 'dynamics', minMode: 1,
+    label: 'Desafios envolvendo mais de duas pessoas',
+    hint: 'Cartas em que três ou mais pessoas fazem a mesma coisa juntas, em vez de ser um de cada vez.'
+  },
+  {
+    id: 'dyn_group', group: 'dynamics', minMode: 1,
+    label: 'Desafios coletivos (todos ao mesmo tempo)',
+    hint: 'A mesa inteira participa de uma vez. A maioria é leve: todos congelam na posição em que estiverem, corrente de elogios, votação, "eu nunca", dançar em duplas. Nos modos mais fortes, também entram momentos coletivos.'
+  },
+  {
+    id: 'dyn_watch', group: 'dynamics', minMode: 2,
+    label: 'Assistir dois jogadores cumprindo um desafio',
+    hint: 'Você fica de fora, só olhando, enquanto outros dois cumprem a carta. Se bloquear, o jogo não usa nenhuma carta que precise de plateia enquanto você estiver de fora.'
+  },
+  {
+    id: 'dyn_be_watched', group: 'dynamics', minMode: 2,
+    label: 'Cumprir um desafio sendo assistido',
+    hint: 'O contrário: é você no centro, com o resto da mesa olhando. Vale desde uma dança boba até o que o modo permitir.'
+  }
 ];
 
 export const LIMITS_BY_ID = Object.fromEntries(LIMITS.map((l) => [l.id, l]));

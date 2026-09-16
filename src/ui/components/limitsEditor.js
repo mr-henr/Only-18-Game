@@ -11,7 +11,7 @@
  */
 
 import { h, panel, btn, notice } from '../dom.js';
-import { getMode, LIMIT_STATES } from '../../data/gameModes.js';
+import { getMode, LIMIT_STATES, INTENSITY_LEVELS } from '../../data/gameModes.js';
 import { LIMITS, LIMITS_BY_ID, groupsForMode } from '../../data/limitsCatalog.js';
 import {
   setLimit, setGroup, confirmGroup, pendingConfirmations,
@@ -91,17 +91,15 @@ function scopeControl(limits, { hasPartner, onChange, onWarn }) {
 }
 
 function intensityControl(limits, mode, onChange) {
-  const levels = [
-    { level: 1, icon: '🌙', name: 'Leve' },
-    { level: 2, icon: '✨', name: 'Clima' },
-    { level: 3, icon: '🔥', name: 'Intensa' },
-    { level: 4, icon: '🔥🔥', name: 'Adulta' },
-    { level: 5, icon: '🔥🔥🔥', name: 'Sem freio' }
-  ].slice(0, mode.maxIntensity);
+  const levels = INTENSITY_LEVELS.slice(0, mode.maxIntensity);
+  const escolhido = levels.find((l) => l.level === limits.maxIntensity) ?? levels[levels.length - 1];
 
   return h('div', { class: 'block' },
     h('h3', {}, 'Minha intensidade máxima'),
-    h('p', { class: 'faint' }, 'A partida nunca passa do menor teto entre os jogadores.'),
+    h('p', { class: 'faint' },
+      'A noite começa no nível 1 e vai subindo conforme vocês cumprem as cartas. ' +
+      'Aqui você diz onde ela para, para você. A partida nunca passa do menor teto da mesa.'),
+
     h('div', { class: 'grid intensity-grid' },
       levels.map((lvl) => h('button', {
         class: `choice compact ${limits.maxIntensity === lvl.level ? 'selected' : ''}`,
@@ -110,7 +108,21 @@ function intensityControl(limits, mode, onChange) {
         h('b', { class: 'centered' }, lvl.icon),
         h('span', { class: 'meta' }, lvl.name)
       ))
-    )
+    ),
+
+    // Sem isto, a pessoa escolhe entre cinco palavras sem saber o que
+    // cada uma quer dizer.
+    escolhido
+      ? h('div', { class: 'level-explain' },
+          h('b', {}, `${escolhido.icon} ${escolhido.level} — ${escolhido.name}`),
+          h('p', {}, escolhido.hint),
+          h('p', { class: 'faint' }, escolhido.exemplo),
+          escolhido.level === mode.maxIntensity
+            ? h('p', { class: 'faint' },
+                `É o nível mais alto do modo ${mode.icon} ${mode.name}. Acima disso o modo não vai, ` +
+                'mesmo que todo mundo libere tudo.')
+            : null)
+      : null
   );
 }
 
@@ -213,7 +225,13 @@ export function limitsEditor(o) {
       group.id === 'dynamics'
         ? h('div', {},
             scopeControl(o.limits, { hasPartner: o.hasPartner, onChange: o.onChange, onWarn: o.onWarn }),
-            intensityControl(o.limits, mode, o.onChange))
+            intensityControl(o.limits, mode, o.onChange),
+            h('div', { class: 'block' },
+              h('h3', {}, 'Com quantas pessoas'),
+              h('p', { class: 'faint' },
+                'Estas opções dizem com QUANTAS pessoas a ação acontece, não o quanto ' +
+                'ela esquenta — por isso a lista não muda quando você troca a intensidade ' +
+                'acima. A maior parte destas cartas não tem nada de sexual.')))
         : null,
 
       items.length

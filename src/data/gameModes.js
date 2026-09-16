@@ -197,10 +197,38 @@ export function getMode(id) {
   return mode;
 }
 
+/**
+ * Os cinco niveis de intensidade.
+ *
+ * Intensidade e DIFERENTE de modo: o modo decide o que pode existir na
+ * mesa, a intensidade decide o quao longe se vai dentro disso. Por isso
+ * a descricao fala de "ousadia", e nao de atos especificos — o mesmo
+ * nivel 3 rende coisas diferentes no Leve e no Adulto.
+ */
 export const INTENSITY_LEVELS = [
-  { level: 1, icon: '🌙', name: 'Leve', hint: 'Aquecimento, perguntas e brincadeira.' },
-  { level: 2, icon: '✨', name: 'Clima', hint: 'Proximidade e provocacao.' },
-  { level: 3, icon: '🔥', name: 'Intensa', hint: 'Contato fisico e ousadia.' },
-  { level: 4, icon: '🔥🔥', name: 'Adulta', hint: 'Conteudo explicito dentro dos limites.' },
-  { level: 5, icon: '🔥🔥🔥', name: 'Sem freio', hint: 'O teto do que o grupo permitiu.' }
+  {
+    level: 1, icon: '🌙', name: 'Leve',
+    hint: 'Só o começo: perguntas, brincadeira e aproximação.',
+    exemplo: 'Ex.: contar uma história constrangedora, elogiar alguém, dar as mãos.'
+  },
+  {
+    level: 2, icon: '✨', name: 'Clima',
+    hint: 'Começa a provocar: mais proximidade e perguntas mais diretas.',
+    exemplo: 'Ex.: sentar no colo, se encarar sem rir, perguntas sobre preferências.'
+  },
+  {
+    level: 3, icon: '🔥', name: 'Intensa',
+    hint: 'As cartas ousadas do modo que vocês escolheram entram aqui.',
+    exemplo: 'Ex.: massagem, beijo demorado, peça de roupa saindo — se o modo permitir.'
+  },
+  {
+    level: 4, icon: '🔥🔥', name: 'Adulta',
+    hint: 'O conteúdo mais forte que o modo escolhido permite.',
+    exemplo: 'Ex.: nudez e contato explícito — de novo, só até onde o modo deixa.'
+  },
+  {
+    level: 5, icon: '🔥🔥🔥', name: 'Sem freio',
+    hint: 'Sem meio-termo: tudo que o modo e os seus limites deixarem passar.',
+    exemplo: 'Nenhuma carta fica de fora por ser forte demais — só pelos seus limites.'
+  }
 ];

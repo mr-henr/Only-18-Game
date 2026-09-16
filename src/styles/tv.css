@@ -337,3 +337,17 @@ html[data-surface='phone'] .card-text { font-size: 19px; }
   opacity: .55;
   transition: width .45s cubic-bezier(.2, .8, .3, 1);
 }
+
+/* --------------------------------- explicação do nível escolhido */
+
+.level-explain {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: var(--r-md);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  animation: panelIn .28s ease both;
+}
+.level-explain b { display: block; margin-bottom: 4px; }
+.level-explain p { margin: 0 0 6px; font-size: 14px; color: var(--text-dim); }
+.level-explain p:last-child { margin-bottom: 0; }
